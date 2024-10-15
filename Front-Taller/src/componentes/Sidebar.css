@@ -1,0 +1,117 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  width: 100vw;
+  height: 100vh;
+  padding: 0;
+  margin: 0;
+}
+
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.page {
+  width: 100%;
+  height: 100%;
+}
+
+.content {
+  width: calc(100% - 50px); /* Ajuste inicial para cuando el sidebar está cerrado */
+  margin-left: 50px; /* Margen inicial cuando el sidebar está cerrado */
+  padding: 15px;
+  height: 100%;
+  transition: margin-left 0.3s ease, width 0.3s ease; /* Transiciones suaves */
+}
+
+.content--shift {
+  width: calc(100% - 250px); /* Ajuste del contenido cuando el sidebar está expandido */
+  margin-left: 250px; /* Mueve el contenido hacia la derecha cuando el sidebar está abierto */
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 50px; /* Ancho inicial (contraído) */
+  height: 100%;
+  background-color: #2a363b;
+  transition: width 0.3s ease; /* Transición suave para el ancho del sidebar */
+  border-right: 1px #4d606e solid;
+  padding-top: 15px;
+}
+
+.sidebar .sidebar-position {
+  height: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  text-align: left;
+}
+
+.sidebar .sidebar-position:hover {
+  background-color: #3f5159;
+  border-right: 5px #e84a5f solid;
+}
+
+.sidebar svg {
+  color: #e84a5f;
+  min-width: 25px; /* Asegura que los íconos tengan el tamaño correcto */
+}
+
+.sidebar span {
+  width: 0; /* Oculta el texto cuando el sidebar está contraído */
+  height: 0;
+  padding: 0 15px;
+  transition: width 0.3s ease; /* Transición suave para el texto */
+  color: #c9c9c9;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden; /* Oculta cualquier texto que desborde */
+  text-overflow: ellipsis;
+}
+
+.sidebar--open {
+  width: 250px; /* Ancho del sidebar cuando está expandido */
+  transition: width 0.3s ease;
+}
+
+.sidebar--open .sidebar-position span {
+  display: block; /* Muestra el texto cuando el sidebar está expandido */
+  width: 100%; /* El texto ocupa todo el espacio disponible */
+  height: auto; /* Ajusta la altura automáticamente */
+}
+
+.trigger {
+  height: 50px;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 12px 15px;
+}
+
+/* Estilo del navbar ajustado cuando el sidebar está expandido */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: calc(100% - 50px); /* Ancho cuando el sidebar está cerrado */
+  padding: 10px 20px;
+  margin-left: 50px; /* Desplazamiento cuando el sidebar está cerrado */
+  box-sizing: border-box;
+  background-color: #88c0d5;
+  position: fixed;
+  top: 0;
+  z-index: 1000;
+  transition: margin-left 0.3s ease, width 0.3s ease; /* Transiciones suaves */
+}
+
+.header--shift {
+  width: calc(100% - 250px); /* Ancho cuando el sidebar está abierto */
+  margin-left: 250px; /* Ajusta el margen cuando el sidebar está abierto */
+}

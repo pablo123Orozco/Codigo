@@ -1,0 +1,57 @@
+/* Estilos generales para el Dashboard */
+.dashboard-wrapper {
+  display: flex;
+  height: 100vh;
+}
+
+.dashboard-container {
+  display: flex;
+  flex: 1;
+  transition: margin-left 0.3s ease;
+  margin-left: 80px; /* Ancho del sidebar cerrado */
+}
+
+.dashboard-container--shift {
+  margin-left: 250px; /* Ancho del sidebar abierto */
+}
+
+/* Contenido principal */
+.content {
+  padding: 20px;
+  flex: 1;
+  background-color: #f8f9fa; /* Fondo claro */
+}
+
+/* Estilo de las tarjetas (Cards) */
+.card {
+  border: none;
+  border-radius: 8px;
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Sombra al hacer hover */
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.card-text {
+  font-size: 24px;
+  font-weight: bold;
+  color: #007bff;
+}
+
+/* Ajustes para el título del dashboard */
+h1 {
+  font-size: 28px;
+  font-weight: bold;
+  color: #343a40;
+}
+
+/* Estilos adicionales */
+.shadow-sm {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}

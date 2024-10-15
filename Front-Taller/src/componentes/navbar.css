@@ -1,0 +1,93 @@
+/* Ajuste para reducir el ancho del navbar desde la izquierda */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: calc(100% - 250px); /* Deja un espacio a la izquierda para el sidebar */
+    padding: 10px 20px;
+    margin: 0;
+    margin-left: 250px; /* Desplaza el navbar hacia la derecha, permitiendo que el sidebar ocupe el espacio a la izquierda */
+    box-sizing: border-box;
+    background-color: #88c0d5;
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+    left: 0;
+  }
+  
+  .logo-container {
+    padding: 0.5rem;
+    width: 120px;
+  }
+  
+  .logo-container img {
+    width: 100%;
+    height: auto;
+  }
+  
+  .navbar-custom {
+    background-color: #88c0d5 !important;
+  }
+  
+  .nav-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-grow: 1;
+  }
+  
+  .nav-item {
+    margin: 0 15px;
+    list-style: none;
+  }
+  
+  .nav-link {
+    text-decoration: none;
+    color: white !important;
+    font-weight: 500;
+    font-size: 18px;
+    padding: 10px;
+  }
+  
+  /* Sidebar: a la izquierda y debajo del navbar */
+  .sidebar {
+    position: fixed;
+    top: 60px; /* Ajusta esto según la altura del navbar */
+    left: 0;
+    width: 250px;
+    height: calc(100% - 60px); /* Restar la altura del navbar */
+    background-color: #2a363b;
+    padding-top: 20px;
+    z-index: 999;
+  }
+  
+  .sidebar .sidebar-position {
+    padding: 15px;
+    text-align: center;
+  }
+  
+  .sidebar .sidebar-position:hover {
+    background-color: #3f5159;
+  }
+  
+  .sidebar svg {
+    color: #e84a5f;
+  }
+  
+  .sidebar span {
+    color: white;
+  }
+  
+  /* Contenedor de contenido principal */
+  .dashboard-container {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .content {
+    margin-left: 250px; /* Espacio para el sidebar */
+    padding: 20px;
+    margin-top: 80px; /* Espacio para el navbar */
+    width: calc(100% - 250px); /* Espacio restante después del sidebar */
+  }
+  
