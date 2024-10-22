@@ -28,7 +28,7 @@ module.exports = function(dbinyectada) {
         return db.agregar(TABLA, clienteData);
     }
 
-    // **Actualizar cliente usando el ID**
+    
     function actualizar(id, body) {
         const clienteData = {
             nombre: body.nombre,
@@ -42,7 +42,7 @@ module.exports = function(dbinyectada) {
         return db.actualizar(TABLA, id, clienteData);  // Pasamos el `id` y `clienteData` correctamente
     }
 
-    // **Eliminar cliente usando el ID**
+    
     function eliminar(id) {
         return db.eliminar(TABLA, id);
     }

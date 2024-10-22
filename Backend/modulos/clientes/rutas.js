@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/', todos);
 router.get('/:id', uno);
 router.post('/', agregar);
-router.put('/:id', actualizar);  // El `id` se captura desde la URL
+router.put('/:id', actualizar);  
 router.delete('/:id', eliminar);
 
 async function todos(req, res, next) {
@@ -49,7 +49,7 @@ async function actualizar(req, res, next) {
     }
 }
 
-// **Eliminar cliente usando el ID desde la URL**
+
 async function eliminar(req, res, next) {
     try {
         const id = req.params.id;  // Captura el ID desde la URL

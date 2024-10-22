@@ -15,12 +15,11 @@ interface Compra {
 interface CompraListProps {
   onEdit: (compra: Compra) => void;
   onDelete: (id: number) => void;
-  refresh: boolean; // Para forzar la recarga de los datos cuando se actualiza algo
+  refresh: boolean;
 }
 
 const CompraList: React.FC<CompraListProps> = ({ onEdit, onDelete, refresh }) => {
   const [compras, setCompras] = useState<Compra[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -34,23 +33,14 @@ const CompraList: React.FC<CompraListProps> = ({ onEdit, onDelete, refresh }) =>
     } catch (error) {
       console.error('Error al obtener compras:', error);
       setError('Error al obtener las compras.');
-    } finally {
-      setLoading(false);
     }
   };
 
-  if (loading) {
-    return <div>Cargando compras...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
-
   return (
-    <div>
+    <div className="container-custom">
       <h2>Lista de Compras</h2>
-      <table>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <table className="table table-custom">
         <thead>
           <tr>
             <th>ID</th>
@@ -70,7 +60,6 @@ const CompraList: React.FC<CompraListProps> = ({ onEdit, onDelete, refresh }) =>
               <tr key={compra.id}>
                 <td>{compra.id}</td>
                 <td>{compra.nombreProducto}</td>
-                {/* Formateamos la fecha para quitar la hora */}
                 <td>{new Date(compra.fecha).toISOString().split('T')[0]}</td>
                 <td>{compra.total}</td>
                 <td>{compra.estado}</td>
@@ -78,8 +67,8 @@ const CompraList: React.FC<CompraListProps> = ({ onEdit, onDelete, refresh }) =>
                 <td>{compra.idCliente}</td>
                 <td>{compra.marcha}</td>
                 <td>
-                  <button onClick={() => onEdit(compra)}>Editar</button>
-                  <button onClick={() => onDelete(compra.id)}>Eliminar</button>
+                  <button className="btn btn-edit" onClick={() => onEdit(compra)}>Editar</button>
+                  <button className="btn btn-delete" onClick={() => onDelete(compra.id)}>Eliminar</button>
                 </td>
               </tr>
             ))

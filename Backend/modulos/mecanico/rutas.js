@@ -1,20 +1,20 @@
 const express = require('express');
 const respuesta = require('../../src/red/respuesta');
-const controlador = require('./index');  // Controlador del CRUD de mecanico
+const controlador = require('./index'); 
 
 const router = express.Router();
 
-// Rutas CRUD para la tabla mecanico
-router.get('/', todos);                // Obtener todos los mecánicos
-router.get('/:id', uno);               // Obtener un mecánico por su ID
-router.post('/', agregar);             // Crear un nuevo mecánico
-router.put('/:id', actualizar);        // Actualizar un mecánico existente
-router.delete('/:id', eliminar);       // Eliminar un mecánico
 
-// Funciones asociadas a las rutas
+router.get('/', todos);               
+router.get('/:id', uno);              
+router.post('/', agregar);            
+router.put('/:id', actualizar);       
+router.delete('/:id', eliminar);      
+
+
 async function uno(req, res, next) {
     try {
-        const mecanico = await controlador.uno(req.params.id);  // Corregido: pasa el id correctamente
+        const mecanico = await controlador.uno(req.params.id); 
         respuesta.success(req, res, mecanico, 200);
     } catch (err) {
         next(err);
@@ -23,7 +23,7 @@ async function uno(req, res, next) {
 
 async function todos(req, res, next) {
     try {
-        const mecanicos = await controlador.todos();  // Corregido: llamado sin parámetro, devuelve todos
+        const mecanicos = await controlador.todos();  
         respuesta.success(req, res, mecanicos, 200);
     } catch (err) {
         next(err);

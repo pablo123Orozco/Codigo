@@ -1,107 +1,90 @@
-/* Estilos generales */
-.container-custom {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  h2 {
-    color: #007bff;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 30px;
-  }
-  
-  /* Estilos del formulario */
-  .form-custom {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .form-custom .form-group {
-    margin-bottom: 1.5rem;
-  }
-  
-  .form-custom .form-control {
-    border-radius: 4px;
-    border: 1px solid #ced4da;
-  }
-  
-  .form-custom .btn-submit {
-    background-color: #28a745;
-    color: white;
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    font-size: 18px;
-    transition: background-color 0.3s;
-  }
-  
-  .form-custom .btn-submit:hover {
-    background-color: #218838;
-  }
-  
-  .form-custom .btn-update {
-    background-color: #ffc107;
-    color: white;
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    font-size: 18px;
-    transition: background-color 0.3s;
-  }
-  
-  .form-custom .btn-update:hover {
-    background-color: #e0a800;
-  }
-  
-  /* Estilos de la tabla */
-  .table-custom {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .table-custom thead {
-    background-color: #007bff;
-    color: white;
-  }
-  
-  .table-custom tbody tr:nth-child(odd) {
-    background-color: #f8f9fa;
-  }
-  
-  .table-custom tbody tr:nth-child(even) {
-    background-color: white;
-  }
-  
-  .table-custom .btn-edit {
-    background-color: #ffc107;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-  }
-  
-  .table-custom .btn-edit:hover {
-    background-color: #e0a800;
-  }
-  
-  .table-custom .btn-delete {
-    background-color: #dc3545;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-  }
-  
-  .table-custom .btn-delete:hover {
-    background-color: #c82333;
-  }
-  
+/* Mover el contenido hacia abajo para no ser tapado por el navbar */
+.dashboard-wrapper {
+  display: flex;
+  height: 100vh;
+}
+
+.dashboard-container {
+  display: flex;
+  flex: 1;
+  transition: margin-left 0.3s ease;
+  margin-left: 60px; /* El margen coincide con el ancho del sidebar cerrado */
+}
+
+.dashboard-container--shift {
+  margin-left: 240px; /* Cuando el sidebar está abierto */
+}
+
+.content {
+  padding: 20px;
+  flex: 1;
+  margin-top: 100px; /* Aumentamos el margen superior para evitar que el navbar lo tape */
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+/* Estilo del modal */
+.modal-custom {
+  max-width: 80vw; /* Hacemos que el modal sea horizontal y más ancho */
+  width: 100%;
+}
+
+.modal-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-horizontal .form-group {
+  margin-bottom: 20px;
+}
+
+.form-horizontal .form-control {
+  width: 100%;
+}
+
+.form-horizontal .form-check {
+  margin-top: 32px; /* Para alinear la checkbox con otros campos */
+}
+
+/* Estilo del botón */
+.btn-submit {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
+}
+
+.btn-update {
+  background-color: #28a745;
+  border-color: #28a745;
+  color: white;
+}
+
+.modal-custom {
+  max-width: 75vw; /* Hacer el modal más ancho */
+  width: 100%;
+}
+
+.modal-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.form-horizontal {
+  width: 100%; /* Asegura que el formulario ocupe todo el espacio */
+}
+
+.form-horizontal .form-group {
+  margin-bottom: 20px;
+}
+
+.btn-submit, .btn-update {
+  width: 100px; /* Ajustamos el tamaño de los botones para que no ocupen todo el espacio */
+  margin-left: 10px;
+}
+

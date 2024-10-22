@@ -7,13 +7,13 @@ interface Vehiculo {
     modelo: string;
     placa: string;
     estadoActual: string;
-    historialReparaciones: string;
+    year: string;
 }
 
 interface VehiculoListProps {
     onEdit: (vehiculo: Vehiculo) => void;
     onDelete: (id: number) => void;
-    refresh: boolean; // Para forzar la recarga de los datos cuando se actualiza algo
+    refresh: boolean;
 }
 
 const VehiculoList: React.FC<VehiculoListProps> = ({ onEdit, onDelete, refresh }) => {
@@ -28,13 +28,8 @@ const VehiculoList: React.FC<VehiculoListProps> = ({ onEdit, onDelete, refresh }
     const fetchVehiculos = async () => {
         try {
             const response = await axios.get('http://localhost:4000/api/vehiculos');
-            
-            // Verifica la estructura de la respuesta en la consola
-            console.log('Respuesta del servidor:', response.data);
-
-            // Ajuste para acceder a los datos dentro de `response.data.body`
             if (Array.isArray(response.data.body)) {
-                setVehiculos(response.data.body);  // Asignar los datos de `body` al estado
+                setVehiculos(response.data.body);
             } else {
                 setError('La estructura de la respuesta no es válida.');
             }
@@ -55,9 +50,9 @@ const VehiculoList: React.FC<VehiculoListProps> = ({ onEdit, onDelete, refresh }
     }
 
     return (
-        <div>
+        <div className="container-custom">
             <h2>Lista de Vehículos</h2>
-            <table>
+            <table className="table table-custom">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -65,7 +60,7 @@ const VehiculoList: React.FC<VehiculoListProps> = ({ onEdit, onDelete, refresh }
                         <th>Modelo</th>
                         <th>Placa</th>
                         <th>Estado Actual</th>
-                        <th>Historial de Reparaciones</th>
+                        <th>Año</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -78,10 +73,10 @@ const VehiculoList: React.FC<VehiculoListProps> = ({ onEdit, onDelete, refresh }
                                 <td>{vehiculo.modelo}</td>
                                 <td>{vehiculo.placa}</td>
                                 <td>{vehiculo.estadoActual}</td>
-                                <td>{vehiculo.historialReparaciones}</td>
+                                <td>{vehiculo.year}</td>
                                 <td>
-                                    <button onClick={() => onEdit(vehiculo)}>Editar</button>
-                                    <button onClick={() => onDelete(vehiculo.id)}>Eliminar</button>
+                                    <button className="btn btn-edit" onClick={() => onEdit(vehiculo)}>Editar</button>
+                                    <button className="btn btn-delete" onClick={() => onDelete(vehiculo.id)}>Eliminar</button>
                                 </td>
                             </tr>
                         ))

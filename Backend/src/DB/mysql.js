@@ -25,34 +25,46 @@ function conMysql() {
     conexion.on('error', (err) => {
         console.log('[db err]', err);
         if (err.code === 'PROTOCOL_CONNECTION_LOST') {
-            conMysql(); // Reintentar conexión si se pierde
+            conMysql(); 
         } else {
             throw err;
         }
     });
 }
 
-conMysql(); // Llamar a la función para conectar a la BD
+conMysql(); 
 
-// Obtener todas las órdenes de servicio junto con los vehículos asociados
-function obtenerOrdenesConVehiculos() {
+function obtenerOrdenes() {
     return new Promise((resolve, reject) => {
         const query = `
-            SELECT ordenesservicio.*, vehiculos.marca, vehiculos.modelo, vehiculos.placa
+            SELECT 
+                ordenesservicio.id AS numeroOrden,
+                ordenesservicio.detalleReparacion, 
+                ordenesservicio.costoEstimado, 
+                ordenesservicio.estado,
+                vehiculos.marca, 
+                vehiculos.placa,
+                clientes.nombre AS nombreCliente,  -- Obtener el nombre del cliente
+                mecanico.nombre AS nombreMecanico
             FROM ordenesservicio
-            JOIN vehiculos ON ordenesservicio.idVehiculo = vehiculos.id  -- Ajustado a 'id'
+            JOIN vehiculos ON ordenesservicio.idVehiculo = vehiculos.id
+            JOIN clientes ON ordenesservicio.idCliente = clientes.id
+            JOIN mecanico ON ordenesservicio.idMecanico = mecanico.id
         `;
         conexion.query(query, (error, result) => {
             if (error) {
                 console.error('[error en la consulta]', error);
-                return reject(error); // Manejo de error si falla la consulta
+                return reject(error);
             }
-            resolve(result); // Devuelve las órdenes junto con los vehículos
+            resolve(result);
         });
     });
 }
 
-// Funciones adicionales (todos, uno, agregar, actualizar, eliminar)
+
+
+
+
 function todos(tabla) {
     return new Promise((resolve, reject) => {
         conexion.query(`SELECT * FROM ${tabla}`, (error, result) => {
@@ -72,10 +84,15 @@ function uno(tabla, id) {
 function agregar(tabla, data) {
     return new Promise((resolve, reject) => {
         conexion.query(`INSERT INTO ${tabla} SET ?`, [data], (error, result) => {
-            return error ? reject(error) : resolve(result);
+            if (error) {
+                console.error('[error en agregar]', error);
+                return reject(error);
+            }
+            resolve(result);
         });
     });
 }
+
 
 function actualizar(tabla, id, data) {
     return new Promise((resolve, reject) => {
@@ -154,7 +171,7 @@ async function actualizarCompra(id, compra) {
     });
 }
 
-function obtenerMecanicosConOrden() {
+/*function obtenerMecanicosConOrden() {
     return new Promise((resolve, reject) => {
         const query = `
             SELECT 
@@ -176,6 +193,30 @@ function obtenerMecanicosConOrden() {
     });
 }
 
+*/
+
+function actualizarServicio(id, data) {
+    return new Promise((resolve, reject) => {
+        // Construir los campos de actualización dinámicamente
+        const fields = Object.keys(data)
+            .map(key => `${key} = ?`)  // Mapea cada clave al formato "campo = valor"
+            .join(', ');
+        const values = Object.values(data);  // Obtener los valores del objeto `data`
+        values.push(id);  // Añadir el `id` al final para la condición `WHERE`
+
+        // Consulta de actualización
+        const query = `UPDATE servicios SET ${fields} WHERE id = ?`;
+
+        // Ejecutar la consulta
+        conexion.query(query, values, (error, result) => {
+            if (error) {
+                console.error('[error en actualizarServicio]', error);  // Mostrar el error en consola
+                return reject(error);  // Rechazar la promesa en caso de error
+            }
+            resolve(result);  // Resolver la promesa con el resultado
+        });
+    });
+}
 
 
 module.exports = {
@@ -185,7 +226,7 @@ module.exports = {
     actualizar,
     eliminar,
     query,
-    obtenerOrdenesConVehiculos,
+    obtenerOrdenes,
     actualizarCompra,
-    obtenerMecanicosConOrden
+    actualizarServicio
 };

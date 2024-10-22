@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 
 interface Cliente {
   id?: number;
@@ -68,86 +69,92 @@ const ClienteForm: React.FC<ClienteFormProps> = ({ clienteToEdit, onSave }) => {
   };
 
   return (
-    <div className="container-custom">
+    <Container>
       <h2>{clienteToEdit ? 'Editar Cliente' : 'Agregar Cliente'}</h2>
-      <form className="form-custom" onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="nombre">Nombre</label>
-          <input
-            type="text"
-            className="form-control"
-            id="nombre"
-            name="nombre"
-            placeholder="Nombre"
-            value={formData.nombre}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="apellido">Apellido</label>
-          <input
-            type="text"
-            className="form-control"
-            id="apellido"
-            name="apellido"
-            placeholder="Apellido"
-            value={formData.apellido}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="nit">NIT</label>
-          <input
-            type="text"
-            className="form-control"
-            id="nit"
-            name="nit"
-            placeholder="NIT"
-            value={formData.nit}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="telefono">Teléfono</label>
-          <input
-            type="text"
-            className="form-control"
-            id="telefono"
-            name="telefono"
-            placeholder="Teléfono"
-            value={formData.telefono}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="correo">Correo</label>
-          <input
-            type="email"
-            className="form-control"
-            id="correo"
-            name="correo"
-            placeholder="Correo"
-            value={formData.correo}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="estadoCuenta">Estado de Cuenta</label>
-          <input
-            type="text"
-            className="form-control"
-            id="estadoCuenta"
-            name="estadoCuenta"
-            placeholder="Estado de Cuenta"
-            value={formData.estadoCuenta}
-            onChange={handleChange}
-          />
-        </div>
-        <button type="submit" className={clienteToEdit ? "btn btn-update" : "btn btn-submit"}>
+      <Form onSubmit={handleSubmit}>
+        <Row>
+          <Col md={6}>
+            <Form.Group controlId="nombre">
+              <Form.Label>Nombre</Form.Label>
+              <Form.Control
+                type="text"
+                name="nombre"
+                placeholder="Nombre"
+                value={formData.nombre}
+                onChange={handleChange}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group controlId="apellido">
+              <Form.Label>Apellido</Form.Label>
+              <Form.Control
+                type="text"
+                name="apellido"
+                placeholder="Apellido"
+                value={formData.apellido}
+                onChange={handleChange}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={6}>
+            <Form.Group controlId="nit">
+              <Form.Label>NIT</Form.Label>
+              <Form.Control
+                type="text"
+                name="nit"
+                placeholder="NIT"
+                value={formData.nit}
+                onChange={handleChange}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group controlId="telefono">
+              <Form.Label>Teléfono</Form.Label>
+              <Form.Control
+                type="text"
+                name="telefono"
+                placeholder="Teléfono"
+                value={formData.telefono}
+                onChange={handleChange}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={6}>
+            <Form.Group controlId="correo">
+              <Form.Label>Correo</Form.Label>
+              <Form.Control
+                type="email"
+                name="correo"
+                placeholder="Correo"
+                value={formData.correo}
+                onChange={handleChange}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={6}>
+            <Form.Group controlId="estadoCuenta">
+              <Form.Label>Estado de Cuenta</Form.Label>
+              <Form.Control
+                type="text"
+                name="estadoCuenta"
+                placeholder="Estado de Cuenta"
+                value={formData.estadoCuenta}
+                onChange={handleChange}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+        <Button variant="primary" type="submit" className="mt-3">
           {clienteToEdit ? 'Actualizar' : 'Agregar'}
-        </button>
-      </form>
-    </div>
+        </Button>
+      </Form>
+    </Container>
   );
 };
 

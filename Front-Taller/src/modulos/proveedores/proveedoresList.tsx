@@ -28,13 +28,9 @@ const ProveedorList: React.FC<ProveedorListProps> = ({ onEdit, onDelete, refresh
   const fetchProveedores = async () => {
     try {
       const response = await axios.get('http://localhost:4000/api/proveedor');
-      
-      // Cambiamos a response.data.body ya que body parece contener los datos reales
       if (Array.isArray(response.data.body)) {
-        console.log(response.data.body); // Verificar los datos que estamos obteniendo
-        setProveedores(response.data.body); // Asignamos los proveedores al estado
+        setProveedores(response.data.body);
       } else {
-        console.error('La estructura de la respuesta no es válida');
         setError('La estructura de la respuesta no es válida.');
       }
     } catch (error) {
@@ -54,9 +50,9 @@ const ProveedorList: React.FC<ProveedorListProps> = ({ onEdit, onDelete, refresh
   }
 
   return (
-    <div>
+    <div className="container-custom">
       <h2>Lista de Proveedores</h2>
-      <table>
+      <table className="table table-custom">
         <thead>
           <tr>
             <th>ID</th>
@@ -70,7 +66,7 @@ const ProveedorList: React.FC<ProveedorListProps> = ({ onEdit, onDelete, refresh
         </thead>
         <tbody>
           {proveedores.length > 0 ? (
-            proveedores.map((proveedor) => (
+            proveedores.map(proveedor => (
               <tr key={proveedor.id}>
                 <td>{proveedor.id}</td>
                 <td>{proveedor.nombre}</td>
@@ -79,8 +75,12 @@ const ProveedorList: React.FC<ProveedorListProps> = ({ onEdit, onDelete, refresh
                 <td>{proveedor.razonSocial}</td>
                 <td>{proveedor.telefono}</td>
                 <td>
-                  <button onClick={() => onEdit(proveedor)}>Editar</button>
-                  <button onClick={() => onDelete(proveedor.id)}>Eliminar</button>
+                  <button className="btn btn-edit" onClick={() => onEdit(proveedor)}>
+                    Editar
+                  </button>
+                  <button className="btn btn-delete" onClick={() => onDelete(proveedor.id)}>
+                    Eliminar
+                  </button>
                 </td>
               </tr>
             ))

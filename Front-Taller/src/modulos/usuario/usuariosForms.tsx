@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Form, Row, Col } from 'react-bootstrap'; // Usamos Row y Col para la disposición horizontal
 
 interface User {
   id?: number;
@@ -40,9 +41,15 @@ const UserForm: React.FC<UserFormProps> = ({ userToEdit, onSave }) => {
     }
   }, [userToEdit]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  // Función para manejar los cambios en el formulario
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target;
+    
+    // Si el input es de tipo checkbox, se usa la propiedad 'checked', de lo contrario se usa 'value'
+    setFormData({
+      ...formData,
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -65,87 +72,92 @@ const UserForm: React.FC<UserFormProps> = ({ userToEdit, onSave }) => {
   };
 
   return (
-    <div className="container-custom">
-      <h2>{userToEdit ? 'Editar Usuario' : 'Agregar Usuario'}</h2>
-      <form className="form-custom" onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="nombre">Nombre</label>
-          <input
-            type="text"
-            className="form-control"
-            id="nombre"
-            name="nombre"
-            placeholder="Nombre"
-            value={formData.nombre}
-            onChange={handleChange}
-          />
+    <div className="container-fluid w-100"> {/* Expandimos el contenedor para que ocupe el espacio */}
+      <h2>{userToEdit ? 'Editar Usuario' : 'Ingresar Usuario'}</h2>
+      <Form onSubmit={handleSubmit} className="form-horizontal">
+        <Row>
+          <Col>
+            <Form.Group controlId="nombre">
+              <Form.Label>Nombre</Form.Label>
+              <Form.Control
+                type="text"
+                name="nombre"
+                value={formData.nombre}
+                placeholder="Nombre"
+                onChange={handleChange}
+              />
+            </Form.Group>
+          </Col>
+          <Col>
+            <Form.Group controlId="apellido">
+              <Form.Label>Apellido</Form.Label>
+              <Form.Control
+                type="text"
+                name="apellido"
+                value={formData.apellido}
+                placeholder="Apellido"
+                onChange={handleChange}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col>
+            <Form.Group controlId="nombreUsuario">
+              <Form.Label>Nombre de Usuario</Form.Label>
+              <Form.Control
+                type="text"
+                name="nombreUsuario"
+                value={formData.nombreUsuario}
+                placeholder="Nombre de Usuario"
+                onChange={handleChange}
+              />
+            </Form.Group>
+          </Col>
+          <Col>
+            <Form.Group controlId="contraseña">
+              <Form.Label>Contraseña</Form.Label>
+              <Form.Control
+                type="password"
+                name="contraseña"
+                value={formData.contraseña}
+                placeholder="Contraseña"
+                onChange={handleChange}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col>
+            <Form.Group controlId="rol">
+              <Form.Label>Rol</Form.Label>
+              <Form.Control as="select" name="rol" value={formData.rol} onChange={handleChange}>
+                <option value="usuario">Usuario</option>
+                <option value="admin">Admin</option>
+              </Form.Control>
+            </Form.Group>
+          </Col>
+          <Col>
+            <Form.Group controlId="estado" className="form-check">
+              <Form.Check
+                type="checkbox"
+                label="Activo"
+                name="estado"
+                checked={formData.estado}
+                onChange={handleChange}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
+
+        <div className="d-flex justify-content-end mt-3">
+          <button type="submit" className={userToEdit ? "btn btn-update" : "btn btn-submit"}>
+            {userToEdit ? 'Actualizar' : 'Agregar'}
+          </button>
         </div>
-        <div className="form-group">
-          <label htmlFor="apellido">Apellido</label>
-          <input
-            type="text"
-            className="form-control"
-            id="apellido"
-            name="apellido"
-            placeholder="Apellido"
-            value={formData.apellido}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="nombreUsuario">Nombre de Usuario</label>
-          <input
-            type="text"
-            className="form-control"
-            id="nombreUsuario"
-            name="nombreUsuario"
-            placeholder="Nombre de Usuario"
-            value={formData.nombreUsuario}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="contraseña">Contraseña</label>
-          <input
-            type="password"
-            className="form-control"
-            id="contraseña"
-            name="contraseña"
-            placeholder="Contraseña"
-            value={formData.contraseña}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="rol">Rol</label>
-          <select
-            className="form-control"
-            id="rol"
-            name="rol"
-            value={formData.rol}
-            onChange={handleChange}
-          >
-            <option value="usuario">Usuario</option>
-            <option value="admin">Admin</option>
-          </select>
-        </div>
-        <div className="form-group form-check">
-          <input
-            type="checkbox"
-            className="form-check-input"
-            id="estado"
-            name="estado"
-            checked={formData.estado}
-            onChange={(e) => setFormData({ ...formData, estado: e.target.checked })}
-          />
-          <label className="form-check-label" htmlFor="estado">
-            Activo
-          </label>
-        </div>
-        <button type="submit" className={userToEdit ? "btn btn-update" : "btn btn-submit"}>
-          {userToEdit ? 'Actualizar' : 'Agregar'}
-        </button>
-      </form>
+      </Form>
     </div>
   );
 };

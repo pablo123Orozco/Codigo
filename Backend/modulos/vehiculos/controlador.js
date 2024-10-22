@@ -3,49 +3,43 @@ const TABLA = 'vehiculos';
 module.exports = function (dbinyectada) {
     let db = dbinyectada;
     if (!db) {
-        db = require('../../src/DB/mysql'); // Asegúrate de que esta ruta es correcta
+        db = require('../../src/DB/mysql'); 
     }
 
-    // Obtener todos los vehículos
     async function todos() {
-        return db.todos(TABLA); // Consulta para obtener todos los vehículos
+        return db.todos(TABLA); 
     }
 
-    // Obtener un vehículo por su ID
     async function uno(id) {
-        return db.uno(TABLA, id); // Consulta para obtener un vehículo por su ID
+        return db.uno(TABLA, id);
     }
 
-    // Agregar un nuevo vehículo
     async function agregar(body) {
         const vehiculo = {
             marca: body.marca,
             modelo: body.modelo,
             placa: body.placa,
             estadoActual: body.estadoActual,
-            historialReparaciones: body.historialReparaciones
+            year: body.year,  // Se incluye el campo year
         };
 
-        return db.agregar(TABLA, vehiculo); // Insertar un nuevo vehículo
+        return db.agregar(TABLA, vehiculo); 
     }
 
-    // Actualizar un vehículo existente
     async function actualizar(id, body) {
         const vehiculo = {
             marca: body.marca,
             modelo: body.modelo,
             placa: body.placa,
             estadoActual: body.estadoActual,
-            historialReparaciones: body.historialReparaciones
+            year: body.year,  // Se incluye el campo year
         };
 
-        // Asegúrate de pasar `idvehiculo` correctamente para la actualización
-        return db.actualizar(TABLA, id, vehiculo); // Usar el idvehiculo correctamente para actualizar el registro
+        return db.actualizar(TABLA, id, vehiculo); 
     }
 
-    // Eliminar un vehículo
     async function eliminar(id) {
-        return db.eliminar(TABLA, id); // Eliminar un vehículo por ID
+        return db.eliminar(TABLA, id);
     }
 
     return {

@@ -1,19 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Dropdown } from 'react-bootstrap';
 
 interface OrdenService {
     id: number;
-    detalleReparacion: string;
+    numeroOrden: number;
     costoEstimado: number;
     estado: string;
+    marca: string;
+    placa: string;
+    nombreCliente: string;  
+    estadoPago: string;  
+    detalleReparacion: string;
     idVehiculo: number;
-    marca: string;  // Campos adicionales para mostrar marca y modelo del vehículo
     modelo: string;
 }
 
 interface OrdenServiceListProps {
     onEdit: (orden: OrdenService) => void;
-    onDelete: (id: number) => void;
+    onDelete: (id: number) => Promise<void>;
     refresh: boolean;
 }
 
@@ -23,73 +28,58 @@ const OrdenServiceList: React.FC<OrdenServiceListProps> = ({ onEdit, onDelete, r
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        const fetchOrdenes = async () => {
+            try {
+                const response = await axios.get('http://localhost:4000/api/ordenes');
+                setOrdenes(response.data.body);
+                setLoading(false);
+            } catch (error) {
+                setError('Error al obtener órdenes');
+                setLoading(false);
+            }
+        };
+
         fetchOrdenes();
     }, [refresh]);
 
-    const fetchOrdenes = async () => {
-        try {
-            const response = await axios.get('http://localhost:4000/api/ordenes');
-            console.log('Respuesta de la API:', response.data); // Verificar la estructura de la respuesta
-            // Aquí accedemos a 'body' en lugar de 'response.data'
-            if (response.data && Array.isArray(response.data.body)) {
-                setOrdenes(response.data.body);  // Almacenar los datos dentro de 'body'
-            } else {
-                setError('Error al obtener las órdenes de servicio.');
-            }
-        } catch (error) {
-            console.error('Error al obtener órdenes de servicio:', error);
-            setError('Error al obtener las órdenes de servicio.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    if (loading) {
-        return <div>Cargando órdenes de servicio...</div>;
-    }
-
-    if (error) {
-        return <div>{error}</div>;
-    }
+    if (loading) return <div>Cargando órdenes...</div>;
+    if (error) return <div>{error}</div>;
 
     return (
         <div>
             <h2>Lista de Órdenes de Servicio</h2>
-            <table>
+            <table className="table table-bordered">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Detalle de Reparación</th>
+                        <th>Número de Orden</th>
+                        <th>Vehículo (Marca y Placa)</th>
+                        <th>Cliente</th>
                         <th>Costo Estimado</th>
-                        <th>Estado</th>
-                        <th>ID Vehículo</th>
-                        <th>Marca</th>
-                        <th>Modelo</th>
+                        <th>Estado del Pago</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {ordenes.length > 0 ? (
-                        ordenes.map((orden) => (
-                            <tr key={orden.id}>
-                                <td>{orden.id}</td>
-                                <td>{orden.detalleReparacion}</td>
-                                <td>{orden.costoEstimado}</td>
-                                <td>{orden.estado}</td>
-                                <td>{orden.idVehiculo}</td>
-                                <td>{orden.marca}</td>
-                                <td>{orden.modelo}</td>
-                                <td>
-                                    <button onClick={() => onEdit(orden)}>Editar</button>
-                                    <button onClick={() => onDelete(orden.id)}>Eliminar</button>
-                                </td>
-                            </tr>
-                        ))
-                    ) : (
-                        <tr>
-                            <td colSpan={8}>No hay órdenes de servicio disponibles</td>
+                    {ordenes.map((orden) => (
+                        <tr key={orden.id}>
+                            <td>{orden.numeroOrden}</td>
+                            <td>{orden.marca} - {orden.placa}</td>
+                            <td>{orden.nombreCliente}</td>
+                            <td>{orden.costoEstimado}</td>
+                            <td>{orden.estadoPago}</td>
+                            <td>
+                                <Dropdown>
+                                    <Dropdown.Toggle variant="success" id="dropdown-basic">
+                                        ...
+                                    </Dropdown.Toggle>
+                                    <Dropdown.Menu>
+                                        <Dropdown.Item onClick={() => onEdit(orden)}>Editar</Dropdown.Item>
+                                        <Dropdown.Item onClick={() => onDelete(orden.id)}>Eliminar</Dropdown.Item>
+                                    </Dropdown.Menu>
+                                </Dropdown>
+                            </td>
                         </tr>
-                    )}
+                    ))}
                 </tbody>
             </table>
         </div>

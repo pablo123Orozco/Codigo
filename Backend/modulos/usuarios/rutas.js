@@ -4,14 +4,14 @@ const controlador = require('./index');
 
 const router = express.Router();
 
-// Rutas
+
 router.get('/', todos);
 router.get('/:id', uno);
 router.post('/', agregar);
 router.put('/:id', actualizar);
 router.delete('/', eliminar);
 
-// Obtener todos los usuarios
+
 async function todos(req, res, next) {
     try {
         const items = await controlador.todos();
@@ -21,7 +21,7 @@ async function todos(req, res, next) {
     }
 }
 
-// Obtener un usuario por su ID
+
 async function uno(req, res, next) {
     try {
         const items = await controlador.uno(req.params.id);
@@ -31,7 +31,7 @@ async function uno(req, res, next) {
     }
 }
 
-// Crear un usuario
+
 async function agregar(req, res, next) {
     try {
         const items = await controlador.agregar(req.body);
@@ -42,7 +42,7 @@ async function agregar(req, res, next) {
     }
 }
 
-// Actualizar un usuario existente
+
 async function actualizar(req, res, next) {
     try {
         const items = await controlador.actualizar(req.params.id, req.body);
@@ -53,7 +53,7 @@ async function actualizar(req, res, next) {
     }
 }
 
-// Eliminar un usuario
+
 async function eliminar(req, res, next) {
     try {
         const items = await controlador.eliminar(req.body);

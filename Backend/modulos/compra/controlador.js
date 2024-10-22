@@ -1,34 +1,42 @@
 const TABLA = 'compra';
+const cajaControlador = require('../caja');  // Importamos el controlador de caja para manejar los egresos
 
 module.exports = function (dbinyectada) {
     let db = dbinyectada;
     if (!db) {
-        db = require('../../src/DB/mysql'); // Asegúrate de que esta ruta es correcta
+        db = require('../../src/DB/mysql');
     }
 
-    // Obtener todas las compras
     async function todos() {
         return db.todos(TABLA);
     }
 
-    // Obtener una compra por ID
     async function uno(id) {
         return db.uno(TABLA, id);
     }
 
-    // Agregar una nueva compra
     async function agregar(body) {
         const compra = {
             nombreProducto: body.nombreProducto,
-            fecha: body.fecha,  // Formato 'YYYY-MM-DD'
+            fecha: body.fecha,
             total: body.total,
             estado: body.estado,
-            idProveedor: body.idProveedor,  // Foránea
-            idCliente: body.idCliente,      // Foránea
+            idProveedor: body.idProveedor,
+            idCliente: body.idCliente,
             marcha: body.marcha
         };
 
-        return db.agregar(TABLA, compra); // Insertar una nueva compra
+        try {
+            const nuevaCompra = await db.agregar(TABLA, compra);
+
+            // Registrar egreso en la caja por la compra
+            await cajaControlador.registrarEgreso(nuevaCompra.insertId, body.total, 'Compra de producto');
+
+            return nuevaCompra;
+        } catch (error) {
+            console.error('[error en agregar()]', error);
+            throw error;
+        }
     }
 
     async function actualizar(id, body) {
@@ -41,22 +49,19 @@ module.exports = function (dbinyectada) {
             idCliente: body.idCliente,
             marcha: body.marcha
         };
-    
-        return db.actualizarCompra(id, compra); // Llamada a la nueva función específica
-    }
-    
 
-    // Eliminar una compra
+        return db.actualizarCompra(id, compra);
+    }
+
     async function eliminar(id) {
-        return db.eliminar(TABLA, id); // Eliminar una compra
+        return db.eliminar(TABLA, id);
     }
 
-    // Exportar todas las funciones
     return {
         todos,
         uno,
-        agregar, // Asegúrate de exportar la función agregar correctamente
+        agregar,
         actualizar,
-        eliminar,
+        eliminar
     };
 };

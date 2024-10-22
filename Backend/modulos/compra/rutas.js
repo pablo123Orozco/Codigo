@@ -4,14 +4,14 @@ const controlador = require('./index');
 
 const router = express.Router();
 
-// Rutas CRUD para la tabla compra
-router.get('/', todos);                 // Obtener todas las compras
-router.get('/:id', uno);                // Obtener una compra por ID
-router.post('/', agregar);              // Crear una nueva compra
-router.put('/:id', actualizar);         // Actualizar una compra existente
-router.delete('/:id', eliminar);        // Eliminar una compra
 
-// Funciones asociadas a las rutas
+router.get('/', todos);                 
+router.get('/:id', uno);               
+router.post('/', agregar);             
+router.put('/:id', actualizar);        
+router.delete('/:id', eliminar);       
+
+
 async function todos(req, res, next) {
     try {
         const compras = await controlador.todos();
@@ -32,7 +32,7 @@ async function uno(req, res, next) {
 
 async function agregar(req, res, next) {
     try {
-        const nuevaCompra = await controlador.agregar(req.body);  // Llamar correctamente a la función agregar
+        const nuevaCompra = await controlador.agregar(req.body);  
         respuesta.success(req, res, 'Compra creada con éxito', 201);
     } catch (err) {
         next(err);

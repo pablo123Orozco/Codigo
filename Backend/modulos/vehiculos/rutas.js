@@ -4,36 +4,36 @@ const controlador = require('./index');
 
 const router = express.Router();
 
-// Rutas correctas
-router.get('/', todos);  // Cambia 'uno' por 'todos' para obtener todos los vehículos
-router.get('/:id', uno);  // Obtener un vehículo por ID
+
+router.get('/', todos);  
+router.get('/:id', uno); 
 router.post('/', agregar);
 router.put('/:id', actualizar);
 router.delete('/:id', eliminar);
 
-// Funciones asociadas a las rutas
 
-// Obtener todos los vehículos
+
+
 async function todos(req, res, next) {
     try {
-        const vehiculos = await controlador.todos();  // Devuelve todos los vehículos
+        const vehiculos = await controlador.todos();  
         respuesta.success(req, res, vehiculos, 200);
     } catch (err) {
         next(err);
     }
 }
 
-// Obtener un vehículo por su ID
+
 async function uno(req, res, next) {
     try {
-        const vehiculo = await controlador.uno(req.params.id);  // Usa el parámetro `id`
+        const vehiculo = await controlador.uno(req.params.id);  
         respuesta.success(req, res, vehiculo, 200);
     } catch (err) {
         next(err);
     }
 }
 
-// Agregar un vehículo
+
 async function agregar(req, res, next) {
     try {
         const nuevoVehiculo = await controlador.agregar(req.body);
@@ -43,7 +43,7 @@ async function agregar(req, res, next) {
     }
 }
 
-// Actualizar un vehículo
+
 async function actualizar(req, res, next) {
     try {
         const vehiculoActualizado = await controlador.actualizar(req.params.id, req.body);
@@ -53,7 +53,7 @@ async function actualizar(req, res, next) {
     }
 }
 
-// Eliminar un vehículo
+
 async function eliminar(req, res, next) {
     try {
         await controlador.eliminar(req.params.id);
