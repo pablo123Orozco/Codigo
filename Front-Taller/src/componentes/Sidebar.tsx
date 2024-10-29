@@ -1,7 +1,12 @@
+// Sidebar.tsx
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faTimes, faCogs, faUser, faTable, faList, faCar, faClipboard, faShoppingCart, faHome, faToolbox, faBriefcase, faCashRegister, faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons'; // Añadimos faCashRegister
+import { 
+  faBars, faTimes, faCogs, faUser, faTable, faList, 
+  faCar, faClipboard, faShoppingCart, faHome, faToolbox, 
+  faBriefcase, faCashRegister, faAngleDown, faAngleUp, faWrench 
+} from '@fortawesome/free-solid-svg-icons';
 import './sidebar.css';
 
 interface SidebarProps {
@@ -10,7 +15,8 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ toggleSidebar }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isWorkOpen, setIsWorkOpen] = useState(false); // Estado para controlar el despliegue de "Trabajo"
+  const [isWorkOpen, setIsWorkOpen] = useState(false);
+  const [isReportsOpen, setIsReportsOpen] = useState(false); // Estado para el menú de reportes
 
   const handleTrigger = () => {
     setIsOpen(!isOpen);
@@ -21,6 +27,10 @@ const Sidebar: React.FC<SidebarProps> = ({ toggleSidebar }) => {
     setIsWorkOpen(!isWorkOpen);
   };
 
+  const toggleReportsMenu = () => {
+    setIsReportsOpen(!isReportsOpen);
+  };
+
   return (
     <div className={`sidebar d-flex flex-column${isOpen ? ' sidebar--open' : ''}`}>
       <div className="trigger p-3" onClick={handleTrigger}>
@@ -28,7 +38,6 @@ const Sidebar: React.FC<SidebarProps> = ({ toggleSidebar }) => {
       </div>
 
       <div className="sidebar-items mt-4">
-        {/* Botón para ir al Dashboard */}
         <div className="sidebar-position mb-3">
           <FontAwesomeIcon icon={faHome} className="me-2" />
           {isOpen && (
@@ -74,7 +83,7 @@ const Sidebar: React.FC<SidebarProps> = ({ toggleSidebar }) => {
           )}
         </div>
 
-        {/* Nueva sección para Trabajo */}
+        {/* Sección de Trabajo con submenús */}
         <div className="sidebar-position mb-3" onClick={toggleWorkMenu}>
           <FontAwesomeIcon icon={faBriefcase} className="me-2" />
           {isOpen && (
@@ -85,7 +94,6 @@ const Sidebar: React.FC<SidebarProps> = ({ toggleSidebar }) => {
           )}
         </div>
 
-        {/* Submenús dentro de Trabajo, que solo se muestran cuando isWorkOpen es true */}
         {isWorkOpen && isOpen && (
           <div className="ms-4">
             <div className="sidebar-position mb-3">
@@ -106,20 +114,48 @@ const Sidebar: React.FC<SidebarProps> = ({ toggleSidebar }) => {
                 <span className="link-text">Compras</span>
               </Link>
             </div>
-            {/* Añadimos el módulo de Caja */}
             <div className="sidebar-position mb-3">
               <FontAwesomeIcon icon={faCashRegister} className="me-2" />
               <Link to="/caja" className="text-decoration-none">
                 <span className="link-text">Caja</span>
               </Link>
             </div>
+            <div className="sidebar-position mb-3">
+              <FontAwesomeIcon icon={faWrench} className="me-2" />
+              <Link to="/mecanico" className="text-decoration-none">
+                <span className="link-text">Mecánico</span>
+              </Link>
+            </div>
           </div>
         )}
 
-        <div className="sidebar-position mb-3">
+        {/* Módulo de Reportes con Submenú */}
+        <div className="sidebar-position mb-3" onClick={toggleReportsMenu}>
           <FontAwesomeIcon icon={faList} className="me-2" />
-          {isOpen && <span className="link-text">Reportes</span>}
+          {isOpen && (
+            <>
+              <span className="link-text">Reportes</span>
+              <FontAwesomeIcon icon={isReportsOpen ? faAngleUp : faAngleDown} className="ms-2" />
+            </>
+          )}
         </div>
+
+        {isReportsOpen && isOpen && (
+          <div className="ms-4">
+            <div className="sidebar-position mb-3">
+              <FontAwesomeIcon icon={faClipboard} className="me-2" />
+              <Link to="/reportes/clientes" className="text-decoration-none">
+                <span className="link-text">Clientes</span>
+              </Link>
+            </div>
+            <div className="sidebar-position mb-3">
+              <FontAwesomeIcon icon={faShoppingCart} className="me-2" />
+              <Link to="/reportes/compras" className="text-decoration-none">
+                <span className="link-text">Compras</span>
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

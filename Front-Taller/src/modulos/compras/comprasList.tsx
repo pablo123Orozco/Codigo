@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 interface Compra {
   id: number;
@@ -12,6 +14,16 @@ interface Compra {
   marcha: string;
 }
 
+interface Proveedor {
+  id: number;
+  nombre: string;
+}
+
+interface Cliente {
+  id: number;
+  nombre: string;
+}
+
 interface CompraListProps {
   onEdit: (compra: Compra) => void;
   onDelete: (id: number) => void;
@@ -20,10 +32,14 @@ interface CompraListProps {
 
 const CompraList: React.FC<CompraListProps> = ({ onEdit, onDelete, refresh }) => {
   const [compras, setCompras] = useState<Compra[]>([]);
+  const [proveedores, setProveedores] = useState<Proveedor[]>([]);
+  const [clientes, setClientes] = useState<Cliente[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchCompras();
+    fetchProveedores();
+    fetchClientes();
   }, [refresh]);
 
   const fetchCompras = async () => {
@@ -34,6 +50,34 @@ const CompraList: React.FC<CompraListProps> = ({ onEdit, onDelete, refresh }) =>
       console.error('Error al obtener compras:', error);
       setError('Error al obtener las compras.');
     }
+  };
+
+  const fetchProveedores = async () => {
+    try {
+      const response = await axios.get('http://localhost:4000/api/proveedor');
+      setProveedores(response.data.body);
+    } catch (error) {
+      console.error('Error al obtener proveedores:', error);
+    }
+  };
+
+  const fetchClientes = async () => {
+    try {
+      const response = await axios.get('http://localhost:4000/api/clientes');
+      setClientes(response.data.body);
+    } catch (error) {
+      console.error('Error al obtener clientes:', error);
+    }
+  };
+
+  const getProveedorNombre = (idProveedor: number) => {
+    const proveedor = proveedores.find((prov) => prov.id === idProveedor);
+    return proveedor ? proveedor.nombre : 'Proveedor no encontrado';
+  };
+
+  const getClienteNombre = (idCliente: number) => {
+    const cliente = clientes.find((cli) => cli.id === idCliente);
+    return cliente ? cliente.nombre : 'Cliente no encontrado';
   };
 
   return (
@@ -63,12 +107,20 @@ const CompraList: React.FC<CompraListProps> = ({ onEdit, onDelete, refresh }) =>
                 <td>{new Date(compra.fecha).toISOString().split('T')[0]}</td>
                 <td>{compra.total}</td>
                 <td>{compra.estado}</td>
-                <td>{compra.idProveedor}</td>
-                <td>{compra.idCliente}</td>
+                <td>{getProveedorNombre(compra.idProveedor)}</td>
+                <td>{getClienteNombre(compra.idCliente)}</td>
                 <td>{compra.marcha}</td>
-                <td>
-                  <button className="btn btn-edit" onClick={() => onEdit(compra)}>Editar</button>
-                  <button className="btn btn-delete" onClick={() => onDelete(compra.id)}>Eliminar</button>
+                <td className="actions-cell">
+                  <FontAwesomeIcon
+                    icon={faEdit}
+                    className="icon-button edit-icon"
+                    onClick={() => onEdit(compra)}
+                  />
+                  <FontAwesomeIcon
+                    icon={faTrash}
+                    className="icon-button delete-icon"
+                    onClick={() => onDelete(compra.id)}
+                  />
                 </td>
               </tr>
             ))

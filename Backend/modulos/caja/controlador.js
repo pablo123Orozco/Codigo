@@ -20,7 +20,6 @@ module.exports = function (dbinyectada) {
             monto: body.monto,
             tipo: body.tipo,
             fecha: body.fecha || new Date(),
-            idOrdenServicio: body.idOrdenServicio || null
         };
 
         return db.agregar(TABLA, caja);
@@ -39,16 +38,17 @@ module.exports = function (dbinyectada) {
     }
 
     async function registrarEgreso(idOrdenServicio, monto, concepto) {
+        // Verificar si el idOrdenServicio es válido o no
         const egreso = {
             concepto: concepto,
             monto: monto,
             tipo: 'Egreso',
             fecha: new Date(),
-            idOrdenServicio: idOrdenServicio
         };
-
+    
         return db.agregar(TABLA, egreso);
     }
+    
 
     async function actualizar(id, body) {
         const caja = {
@@ -56,7 +56,6 @@ module.exports = function (dbinyectada) {
             monto: body.monto,
             tipo: body.tipo,
             fecha: body.fecha || null,
-            idOrdenServicio: body.idOrdenServicio || null
         };
 
         return db.actualizar(TABLA, id, caja);

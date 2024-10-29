@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 interface Cliente {
   id: number;
@@ -14,16 +16,17 @@ interface Cliente {
 interface ClienteListProps {
   onEdit: (cliente: Cliente) => void;
   onDelete: (id: number) => void;
+  refresh: boolean;
 }
 
-const ClienteList: React.FC<ClienteListProps> = ({ onEdit, onDelete }) => {
+const ClienteList: React.FC<ClienteListProps> = ({ onEdit, onDelete, refresh }) => {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchClientes();
-  }, []);
+  }, [refresh]);
 
   const fetchClientes = async () => {
     try {
@@ -76,9 +79,17 @@ const ClienteList: React.FC<ClienteListProps> = ({ onEdit, onDelete }) => {
                 <td>{cliente.telefono}</td>
                 <td>{cliente.correo}</td>
                 <td>{cliente.estadoCuenta}</td>
-                <td>
-                  <button className="btn btn-edit" onClick={() => onEdit(cliente)}>Editar</button>
-                  <button className="btn btn-delete" onClick={() => onDelete(cliente.id)}>Eliminar</button>
+                <td className="actions-cell">
+                  <FontAwesomeIcon
+                    icon={faEdit}
+                    className="icon-button edit-icon"
+                    onClick={() => onEdit(cliente)}
+                  />
+                  <FontAwesomeIcon
+                    icon={faTrash}
+                    className="icon-button delete-icon"
+                    onClick={() => onDelete(cliente.id)}
+                  />
                 </td>
               </tr>
             ))

@@ -1,0 +1,31 @@
+.input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Espacio entre el botón de Generar y el de Imprimir */
+}
+
+.btn-generar {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.btn-imprimir {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.btn-generar:hover {
+    background-color: #0056b3;
+}
+
+.btn-imprimir:hover {
+    background-color: #218838;
+}

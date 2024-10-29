@@ -44,8 +44,10 @@ function obtenerOrdenes() {
                 ordenesservicio.estado,
                 vehiculos.marca, 
                 vehiculos.placa,
-                clientes.nombre AS nombreCliente,  -- Obtener el nombre del cliente
-                mecanico.nombre AS nombreMecanico
+                clientes.nombre AS nombreCliente,
+                mecanico.nombre AS nombreMecanico,
+                ordenesservicio.estadoPago,
+                ordenesservicio.tipoPago
             FROM ordenesservicio
             JOIN vehiculos ON ordenesservicio.idVehiculo = vehiculos.id
             JOIN clientes ON ordenesservicio.idCliente = clientes.id
@@ -60,10 +62,6 @@ function obtenerOrdenes() {
         });
     });
 }
-
-
-
-
 
 function todos(tabla) {
     return new Promise((resolve, reject) => {
@@ -92,7 +90,6 @@ function agregar(tabla, data) {
         });
     });
 }
-
 
 function actualizar(tabla, id, data) {
     return new Promise((resolve, reject) => {
@@ -136,7 +133,6 @@ function query(tabla, condiciones) {
     });
 }
 
-
 async function actualizarCompra(id, compra) {
     const sql = `
         UPDATE compra 
@@ -171,55 +167,33 @@ async function actualizarCompra(id, compra) {
     });
 }
 
-/*function obtenerMecanicosConOrden() {
+function actualizarse(tabla, data, id) {
     return new Promise((resolve, reject) => {
-        const query = `
-            SELECT 
-                mecanico.id AS mecanicoId,  -- ID del mecánico
-                mecanico.nombre, 
-                mecanico.fecha, 
-                ordenesservicio.id AS ordenId  -- Solo necesitas el ID de la orden de servicio
-            FROM mecanico
-            JOIN ordenesservicio 
-                ON mecanico.NoOrdenServicio = ordenesservicio.id  -- Unir con la clave foránea
-        `;
-        conexion.query(query, (error, result) => {
-            if (error) {
-                console.error('[error en la consulta]', error);
-                return reject(error); // Manejo de error si falla la consulta
-            }
-            resolve(result); // Devuelve los mecánicos junto con el ID de las órdenes de servicio
-        });
-    });
-}
-
-*/
-
-function actualizarServicio(id, data) {
-    return new Promise((resolve, reject) => {
-        // Construir los campos de actualización dinámicamente
         const fields = Object.keys(data)
-            .map(key => `${key} = ?`)  // Mapea cada clave al formato "campo = valor"
+            .map(key => `${key} = ?`)
             .join(', ');
-        const values = Object.values(data);  // Obtener los valores del objeto `data`
-        values.push(id);  // Añadir el `id` al final para la condición `WHERE`
+        const values = [...Object.values(data), id];
 
-        // Consulta de actualización
-        const query = `UPDATE servicios SET ${fields} WHERE id = ?`;
-
-        // Ejecutar la consulta
-        conexion.query(query, values, (error, result) => {
+        conexion.query(`UPDATE ${tabla} SET ${fields} WHERE id = ?`, values, (error, result) => {
             if (error) {
-                console.error('[error en actualizarServicio]', error);  // Mostrar el error en consola
-                return reject(error);  // Rechazar la promesa en caso de error
+                return reject(error);
             }
-            resolve(result);  // Resolver la promesa con el resultado
+            resolve(result);
         });
     });
 }
 
+function uno2(tabla, id) {
+    return new Promise((resolve, reject) => {
+        conexion.query(`SELECT * FROM ${tabla} WHERE id = ?`, [id], (error, result) => {
+            return error ? reject(error) : resolve(result[0]);
+        });
+    });
+}
 
+// Exporta `conexion` para permitir consultas personalizadas en otros módulos
 module.exports = {
+    conexion,
     todos,
     uno,
     agregar,
@@ -228,5 +202,6 @@ module.exports = {
     query,
     obtenerOrdenes,
     actualizarCompra,
-    actualizarServicio
+    actualizarse,
+    uno2
 };

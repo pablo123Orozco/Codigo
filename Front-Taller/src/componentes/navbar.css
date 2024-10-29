@@ -8,7 +8,7 @@
   margin: 0;
   margin-left: 250px;
   box-sizing: border-box;
-  background-color: #88c0d5;
+  background-color: #707b7c !important;
   position: fixed;
   top: 0;
   z-index: 1000;
@@ -26,7 +26,8 @@
 }
 
 .navbar-custom {
-  background-color: #88c0d5 !important;
+  background-color: #707b7c !important;
+  
 }
 
 .nav-container {
@@ -70,7 +71,7 @@
 
 /* Menú desplegable personalizado */
 .custom-dropdown-menu {
-  background-color: #333333;  /* Cambiar color de fondo a gris oscuro */
+  background-color: #212f3d;  /* Cambiar color de fondo a gris oscuro */
   border-radius: 8px;  /* Bordes redondeados */
   padding: 10px 0;  /* Espaciado interno */
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);  /* Sombra suave */

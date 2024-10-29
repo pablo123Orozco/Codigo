@@ -6,6 +6,7 @@ import './vehiculos.css';
 import Navbar from '../../componentes/navbar';
 import Sidebar from '../../componentes/Sidebar';
 import { Button, Modal } from 'react-bootstrap';
+import { useSpring, animated } from '@react-spring/web';
 
 interface Vehiculo {
     id: number;
@@ -13,7 +14,7 @@ interface Vehiculo {
     modelo: string;
     placa: string;
     estadoActual: string;
-    year: string; // Asegurarse de que 'year' sea consistente
+    year: string;
 }
 
 const VehiculoModule: React.FC = () => {
@@ -21,45 +22,70 @@ const VehiculoModule: React.FC = () => {
     const [refresh, setRefresh] = useState<boolean>(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
     const [showModal, setShowModal] = useState<boolean>(false);
+    const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
+    const [successMessage, setSuccessMessage] = useState<string>('');
+    const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState<boolean>(false);
+    const [showErrorModal, setShowErrorModal] = useState<boolean>(false);
+    const [errorMessage, setErrorMessage] = useState<string>('');
 
-    // Función para abrir/cerrar el modal
-    const handleShowModal = () => setShowModal(true);
-    const handleCloseModal = () => setShowModal(false);
+    const toggleSidebar = (isOpen: boolean): void => {
+        setIsSidebarOpen(isOpen);
+    };
 
     const handleEdit = (vehiculo: Vehiculo) => {
         setVehiculoToEdit(vehiculo);
-        handleShowModal(); // Abrir el modal al editar
-    };
-
-    const handleDelete = async (id: number) => {
-        try {
-            await axios.delete(`http://localhost:4000/api/vehiculos/${id}`);
-            alert('Vehículo eliminado');
-            setRefresh(!refresh);
-        } catch (error) {
-            console.error('Error al eliminar vehículo:', error);
-        }
+        setShowModal(true);
     };
 
     const handleSave = () => {
         setVehiculoToEdit(null);
         setRefresh(!refresh);
-        handleCloseModal(); // Cerrar el modal después de guardar
+        setShowModal(false);
+        setSuccessMessage(vehiculoToEdit ? 'Vehículo actualizado correctamente' : 'Vehículo agregado correctamente');
+        setShowSuccessModal(true);
     };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+        setVehiculoToEdit(null);
+    };
+
+    const handleCloseSuccessModal = () => {
+        setShowSuccessModal(false);
+    };
+
+    const handleCloseDeleteSuccessModal = () => {
+        setShowDeleteSuccessModal(false);
+    };
+
+    const handleCloseErrorModal = () => {
+        setShowErrorModal(false);
+    };
+
+    const successModalAnimation = useSpring({
+        opacity: showSuccessModal ? 1 : 0,
+        transform: showSuccessModal ? 'scale(1)' : 'scale(0.9)',
+        config: { duration: 300 },
+    });
+
+    const deleteSuccessModalAnimation = useSpring({
+        opacity: showDeleteSuccessModal ? 1 : 0,
+        transform: showDeleteSuccessModal ? 'scale(1)' : 'scale(0.9)',
+        config: { duration: 300 },
+    });
 
     return (
         <div className="dashboard-wrapper">
             <Navbar isSidebarOpen={isSidebarOpen} />
             <div className={`dashboard-container${isSidebarOpen ? ' dashboard-container--shift' : ''}`}>
-                <Sidebar toggleSidebar={setIsSidebarOpen} />
+                <Sidebar toggleSidebar={toggleSidebar} />
                 <div className="content">
                     <h1>Vehículos</h1>
-                    <Button variant="primary" onClick={handleShowModal}>
+                    <Button variant="primary" onClick={() => setShowModal(true)}>
                         Agregar Vehículo
                     </Button>
-                    <VehiculoList onEdit={handleEdit} onDelete={handleDelete} refresh={refresh} />
+                    <VehiculoList onEdit={handleEdit} refresh={refresh} />
 
-                    {/* Modal para agregar/editar vehículos */}
                     <Modal show={showModal} onHide={handleCloseModal} dialogClassName="modal-custom">
                         <Modal.Header closeButton>
                             <Modal.Title>{vehiculoToEdit ? 'Editar Vehículo' : 'Agregar Vehículo'}</Modal.Title>
@@ -73,6 +99,43 @@ const VehiculoModule: React.FC = () => {
                             </Button>
                         </Modal.Footer>
                     </Modal>
+
+                    {showSuccessModal && (
+                        <animated.div style={successModalAnimation} className="success-modal">
+                            <Modal.Dialog centered>
+                                <Modal.Body className="text-center">
+                                    <div className="success-animation">✔ {successMessage}</div>
+                                    <Button variant="success" onClick={handleCloseSuccessModal}>
+                                        Cerrar
+                                    </Button>
+                                </Modal.Body>
+                            </Modal.Dialog>
+                        </animated.div>
+                    )}
+
+                    {showDeleteSuccessModal && (
+                        <animated.div style={deleteSuccessModalAnimation} className="success-modal">
+                            <Modal.Dialog centered>
+                                <Modal.Body className="text-center">
+                                    <div className="success-animation">✔ Vehículo eliminado con éxito</div>
+                                    <Button variant="success" onClick={handleCloseDeleteSuccessModal}>
+                                        Cerrar
+                                    </Button>
+                                </Modal.Body>
+                            </Modal.Dialog>
+                        </animated.div>
+                    )}
+
+                    {showErrorModal && (
+                        <Modal show={showErrorModal} onHide={handleCloseErrorModal} centered>
+                            <Modal.Body className="text-center">
+                                <div className="error-animation">⚠ {errorMessage}</div>
+                                <Button variant="danger" onClick={handleCloseErrorModal} className="mt-3">
+                                    Cerrar
+                                </Button>
+                            </Modal.Body>
+                        </Modal>
+                    )}
                 </div>
             </div>
         </div>

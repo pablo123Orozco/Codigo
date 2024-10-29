@@ -8,11 +8,6 @@ interface Mecanico {
   fecha: string;
 }
 
-interface OrdenService {
-  id: number;
-  detalleReparacion: string;
-}
-
 interface MecanicoFormProps {
   mecanicoToEdit: Mecanico | null;
   onSave: () => void;
@@ -24,35 +19,20 @@ const MecanicoForm: React.FC<MecanicoFormProps> = ({ mecanicoToEdit, onSave }) =
     fecha: '',
   });
 
-  const [ordenesServicio, setOrdenesServicio] = useState<OrdenService[]>([]);
-
   useEffect(() => {
-    // Cargar órdenes de servicio
-    const fetchOrdenesServicio = async () => {
-      try {
-        const response = await axios.get('http://localhost:4000/api/ordenes');
-        setOrdenesServicio(response.data.body);
-      } catch (error) {
-        console.error('Error al obtener las órdenes de servicio:', error);
-      }
-    };
-
-    fetchOrdenesServicio();
-
     if (mecanicoToEdit) {
+      const formattedDate = mecanicoToEdit.fecha.split('T')[0]; // Extrae solo la fecha en formato YYYY-MM-DD
       setFormData({
         mecanicoId: mecanicoToEdit.mecanicoId,
         nombre: mecanicoToEdit.nombre,
-        fecha: mecanicoToEdit.fecha,
+        fecha: formattedDate,
       });
     }
   }, [mecanicoToEdit]);
 
-  // Type guard para manejar los diferentes tipos de elementos correctamente
-  const handleChange = (e: React.ChangeEvent<any>) => {
-    const { name, value, type, checked } = e.target;
-    const newValue = type === 'checkbox' ? checked : value;
-    setFormData({ ...formData, [name]: newValue });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -60,10 +40,8 @@ const MecanicoForm: React.FC<MecanicoFormProps> = ({ mecanicoToEdit, onSave }) =
     try {
       if (mecanicoToEdit && mecanicoToEdit.mecanicoId) {
         await axios.put(`http://localhost:4000/api/mecanico/${mecanicoToEdit.mecanicoId}`, formData);
-        alert('Mecánico actualizado');
       } else {
         await axios.post('http://localhost:4000/api/mecanico', formData);
-        alert('Mecánico creado');
       }
       onSave();
     } catch (error) {

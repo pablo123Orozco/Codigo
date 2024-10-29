@@ -48,12 +48,10 @@ const ProveedorForm: React.FC<ProveedorFormProps> = ({ proveedorToEdit, onSave }
     try {
       if (proveedorToEdit && proveedorToEdit.id) {
         await axios.put(`http://localhost:4000/api/proveedor/${proveedorToEdit.id}`, formData);
-        alert('Proveedor actualizado');
       } else {
         await axios.post('http://localhost:4000/api/proveedor', formData);
-        alert('Proveedor creado');
       }
-      onSave();
+      onSave(); // Llama a onSave para mostrar el mensaje de éxito en el módulo principal
     } catch (error) {
       console.error('Error al guardar proveedor:', error);
     }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Row, Col } from 'react-bootstrap'; // Usamos Row y Col para la disposición horizontal
+import { Form, Row, Col, Button } from 'react-bootstrap';
 
 interface User {
   id?: number;
@@ -41,11 +41,8 @@ const UserForm: React.FC<UserFormProps> = ({ userToEdit, onSave }) => {
     }
   }, [userToEdit]);
 
-  // Función para manejar los cambios en el formulario
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    
-    // Si el input es de tipo checkbox, se usa la propiedad 'checked', de lo contrario se usa 'value'
     setFormData({
       ...formData,
       [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
@@ -58,25 +55,23 @@ const UserForm: React.FC<UserFormProps> = ({ userToEdit, onSave }) => {
     try {
       if (userToEdit) {
         const updatedUser = { ...formData };
-        if (!updatedUser.contraseña) delete updatedUser.contraseña;
+        if (!updatedUser.contraseña) delete updatedUser.contraseña; // No actualiza contraseña si está vacía
         await axios.put(`http://localhost:4000/api/usuarios/${userToEdit.id}`, updatedUser);
-        alert('Usuario actualizado');
       } else {
         await axios.post('http://localhost:4000/api/usuarios', formData);
-        alert('Usuario creado');
       }
-      onSave();
+      onSave(); // Llama a onSave para actualizar el estado en UserModule
     } catch (error) {
       console.error('Error al guardar el usuario:', error);
     }
   };
 
   return (
-    <div className="container-fluid w-100"> {/* Expandimos el contenedor para que ocupe el espacio */}
+    <div className="container-fluid w-100">
       <h2>{userToEdit ? 'Editar Usuario' : 'Ingresar Usuario'}</h2>
-      <Form onSubmit={handleSubmit} className="form-horizontal">
+      <Form onSubmit={handleSubmit}>
         <Row>
-          <Col>
+          <Col md={6}>
             <Form.Group controlId="nombre">
               <Form.Label>Nombre</Form.Label>
               <Form.Control
@@ -88,7 +83,7 @@ const UserForm: React.FC<UserFormProps> = ({ userToEdit, onSave }) => {
               />
             </Form.Group>
           </Col>
-          <Col>
+          <Col md={6}>
             <Form.Group controlId="apellido">
               <Form.Label>Apellido</Form.Label>
               <Form.Control
@@ -103,7 +98,7 @@ const UserForm: React.FC<UserFormProps> = ({ userToEdit, onSave }) => {
         </Row>
 
         <Row>
-          <Col>
+          <Col md={6}>
             <Form.Group controlId="nombreUsuario">
               <Form.Label>Nombre de Usuario</Form.Label>
               <Form.Control
@@ -115,7 +110,7 @@ const UserForm: React.FC<UserFormProps> = ({ userToEdit, onSave }) => {
               />
             </Form.Group>
           </Col>
-          <Col>
+          <Col md={6}>
             <Form.Group controlId="contraseña">
               <Form.Label>Contraseña</Form.Label>
               <Form.Control
@@ -130,7 +125,7 @@ const UserForm: React.FC<UserFormProps> = ({ userToEdit, onSave }) => {
         </Row>
 
         <Row>
-          <Col>
+          <Col md={6}>
             <Form.Group controlId="rol">
               <Form.Label>Rol</Form.Label>
               <Form.Control as="select" name="rol" value={formData.rol} onChange={handleChange}>
@@ -139,7 +134,7 @@ const UserForm: React.FC<UserFormProps> = ({ userToEdit, onSave }) => {
               </Form.Control>
             </Form.Group>
           </Col>
-          <Col>
+          <Col md={6}>
             <Form.Group controlId="estado" className="form-check">
               <Form.Check
                 type="checkbox"
@@ -153,9 +148,9 @@ const UserForm: React.FC<UserFormProps> = ({ userToEdit, onSave }) => {
         </Row>
 
         <div className="d-flex justify-content-end mt-3">
-          <button type="submit" className={userToEdit ? "btn btn-update" : "btn btn-submit"}>
+          <Button type="submit" variant={userToEdit ? "success" : "primary"}>
             {userToEdit ? 'Actualizar' : 'Agregar'}
-          </button>
+          </Button>
         </div>
       </Form>
     </div>

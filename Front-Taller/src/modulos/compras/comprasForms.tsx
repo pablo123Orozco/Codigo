@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Row, Col } from 'react-bootstrap'; // Usamos Bootstrap para diseño
+import { Form, Row, Col, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 interface Compra {
   id?: number;
@@ -42,6 +43,8 @@ const CompraForm: React.FC<CompraFormProps> = ({ compraToEdit, onSave }) => {
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (compraToEdit) {
       const fechaFormateada = new Date(compraToEdit.fecha).toISOString().split('T')[0];
@@ -51,7 +54,6 @@ const CompraForm: React.FC<CompraFormProps> = ({ compraToEdit, onSave }) => {
       });
     }
 
-    // Obtener la lista de proveedores
     const fetchProveedores = async () => {
       try {
         const response = await axios.get('http://localhost:4000/api/proveedor');
@@ -61,7 +63,6 @@ const CompraForm: React.FC<CompraFormProps> = ({ compraToEdit, onSave }) => {
       }
     };
 
-    // Obtener la lista de clientes
     const fetchClientes = async () => {
       try {
         const response = await axios.get('http://localhost:4000/api/clientes');
@@ -75,7 +76,7 @@ const CompraForm: React.FC<CompraFormProps> = ({ compraToEdit, onSave }) => {
     fetchClientes();
   }, [compraToEdit]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<any>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -87,12 +88,10 @@ const CompraForm: React.FC<CompraFormProps> = ({ compraToEdit, onSave }) => {
     try {
       if (formData.id) {
         await axios.put(`http://localhost:4000/api/compras/${formData.id}`, formData);
-        alert('Compra actualizada con éxito');
       } else {
         await axios.post('http://localhost:4000/api/compras', formData);
-        alert('Compra creada con éxito');
       }
-      onSave();
+      onSave(); // Llama a onSave para mostrar el mensaje de éxito desde el componente principal
     } catch (error) {
       console.error('Error al guardar la compra:', error);
     }
@@ -154,37 +153,43 @@ const CompraForm: React.FC<CompraFormProps> = ({ compraToEdit, onSave }) => {
         <Col>
           <Form.Group controlId="idProveedor">
             <Form.Label>Proveedor</Form.Label>
-            <Form.Control
-              as="select"
-              name="idProveedor"
-              value={formData.idProveedor || ''}
-              onChange={handleChange}
-            >
-              <option value="">Seleccionar Proveedor</option>
-              {proveedores.map((proveedor) => (
-                <option key={`proveedor-${proveedor.id}`} value={proveedor.id}>
-                  {proveedor.nombre}
-                </option>
-              ))}
-            </Form.Control>
+            <div className="d-flex align-items-center">
+              <Form.Control
+                as="select"
+                name="idProveedor"
+                value={formData.idProveedor || ''}
+                onChange={handleChange}
+              >
+                <option value="">Seleccionar Proveedor</option>
+                {proveedores.map((proveedor) => (
+                  <option key={`proveedor-${proveedor.id}`} value={proveedor.id}>
+                    {proveedor.nombre}
+                  </option>
+                ))}
+              </Form.Control>
+              <Button variant="link" onClick={() => navigate('/proveedores')}>+</Button>
+            </div>
           </Form.Group>
         </Col>
         <Col>
           <Form.Group controlId="idCliente">
             <Form.Label>Cliente</Form.Label>
-            <Form.Control
-              as="select"
-              name="idCliente"
-              value={formData.idCliente || ''}
-              onChange={handleChange}
-            >
-              <option value="">Seleccionar Cliente</option>
-              {clientes.map((cliente) => (
-                <option key={`cliente-${cliente.id}`} value={cliente.id}>
-                  {cliente.nombre}
-                </option>
-              ))}
-            </Form.Control>
+            <div className="d-flex align-items-center">
+              <Form.Control
+                as="select"
+                name="idCliente"
+                value={formData.idCliente || ''}
+                onChange={handleChange}
+              >
+                <option value="">Seleccionar Cliente</option>
+                {clientes.map((cliente) => (
+                  <option key={`cliente-${cliente.id}`} value={cliente.id}>
+                    {cliente.nombre}
+                  </option>
+                ))}
+              </Form.Control>
+              <Button variant="link" onClick={() => navigate('/clientes')}>+</Button>
+            </div>
           </Form.Group>
         </Col>
       </Row>

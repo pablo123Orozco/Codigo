@@ -4,7 +4,7 @@ const controlador = require('./index');
 
 const router = express.Router();
 
-
+router.get('/sugerencias/:query', sugerencias);
 router.get('/', todos);  
 router.get('/:id', uno); 
 router.post('/', agregar);
@@ -63,4 +63,16 @@ async function eliminar(req, res, next) {
     }
 }
 
+
+async function sugerencias(req, res, next) {
+    const { query } = req.params;
+    try {
+        // Realiza la consulta para encontrar placas que comiencen con el valor de `query`
+        const resultados = await controlador.obtenerSugerenciasPlacas(query);
+        respuesta.success(req, res, resultados, 200);
+    } catch (err) {
+        console.error('Error al obtener sugerencias:', err);
+        next(err);
+    }
+}
 module.exports = router;

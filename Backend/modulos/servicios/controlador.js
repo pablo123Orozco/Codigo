@@ -30,7 +30,6 @@ module.exports = function (dbinyectada) {
             precio_repuesto: body.precio_repuesto,
             precio_total: body.precio_total,
             descripcion: body.descripcion,
-            orden_servicio_id: body.orden_servicio_id  // Asegúrate de recibir y pasar este valor
         };
         return db.agregar(TABLA, servicio);
     }
@@ -42,10 +41,10 @@ module.exports = function (dbinyectada) {
             precio_repuesto: body.precio_repuesto,
             precio_total: body.precio_total,
             descripcion: body.descripcion,
-            orden_servicio_id: body.orden_servicio_id  // Incluir el ID de la orden de servicio
         };
-        return db.actualizarServicio(TABLA, servicio, { id: id });
+        return db.actualizarse(TABLA, servicio, id); // ajustado para enviar solo los parámetros necesarios
     }
+    
 
     async function eliminar(id) {
         return db.eliminar(TABLA, id);

@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 interface Mecanico {
-  mecanicoId: number;
+  id: number;
   nombre: string;
   fecha: string;
 }
 
 interface MecanicoListProps {
   onEdit: (mecanico: Mecanico) => void;
-  onDelete: (mecanicoId: number) => void;
+  onDelete: (id: number) => void;
   refresh: boolean;
 }
 
@@ -38,6 +40,8 @@ const MecanicoList: React.FC<MecanicoListProps> = ({ onEdit, onDelete, refresh }
     fetchMecanicos();
   }, [refresh]);
 
+  const formatFecha = (fecha: string) => fecha.split('T')[0]; // Extrae solo la parte de la fecha (YYYY-MM-DD)
+
   return (
     <div className="container-custom">
       <h2>Lista de Mecánicos</h2>
@@ -48,26 +52,33 @@ const MecanicoList: React.FC<MecanicoListProps> = ({ onEdit, onDelete, refresh }
             <th>ID</th>
             <th>Nombre</th>
             <th>Fecha</th>
-            <th>No. Orden Servicio</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           {mecanicos.length > 0 ? (
             mecanicos.map((mecanico) => (
-              <tr key={mecanico.mecanicoId}>
-                <td>{mecanico.mecanicoId}</td>
+              <tr key={`${mecanico.id}-${mecanico.nombre}`}>
+                <td>{mecanico.id}</td>
                 <td>{mecanico.nombre}</td>
-                <td>{mecanico.fecha}</td>
-                <td>
-                  <button className="btn btn-edit" onClick={() => onEdit(mecanico)}>Editar</button>
-                  <button className="btn btn-delete" onClick={() => onDelete(mecanico.mecanicoId)}>Eliminar</button>
+                <td>{formatFecha(mecanico.fecha)}</td>
+                <td className="actions-cell">
+                  <FontAwesomeIcon
+                    icon={faEdit}
+                    className="icon-button edit-icon"
+                    onClick={() => onEdit(mecanico)}
+                  />
+                  <FontAwesomeIcon
+                    icon={faTrash}
+                    className="icon-button delete-icon"
+                    onClick={() => onDelete(mecanico.id)}
+                  />
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={5}>No hay mecánicos disponibles</td>
+              <td colSpan={4}>No hay mecánicos disponibles</td>
             </tr>
           )}
         </tbody>

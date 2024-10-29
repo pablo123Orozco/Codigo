@@ -1,5 +1,4 @@
 const TABLA = 'ordenesservicio';
-const cajaControlador = require('../caja');  // Importamos el controlador de caja para manejar los ingresos
 
 module.exports = function (dbinyectada) {
     let db = dbinyectada;
@@ -8,38 +7,19 @@ module.exports = function (dbinyectada) {
     }
 
     async function todos() {
-        try {
-            const resultados = await db.obtenerOrdenes();
-            if (!resultados || resultados.length === 0) {
-                return [];
-            }
-            return resultados;
-        } catch (error) {
-            console.error('[error en todos()]', error);
-            throw new Error('Error al obtener las órdenes de servicio: ' + error.message);
-        }
+        return db.todos(TABLA);
     }
 
     async function uno(id) {
-        try {
-            const resultado = await db.uno(TABLA, id);
-            if (!resultado) {
-                throw new Error('No se encontró la orden de servicio con el ID especificado');
-            }
-            return resultado;
-        } catch (error) {
-            throw new Error('Error al obtener la orden de servicio');
-        }
+        return db.uno2(TABLA, id);
     }
 
     async function agregar(body) {
-        console.log('Request body:', body);  // Para depuración
+        console.log('Request body:', body);  
     
-        // Validamos y convertimos los valores
         const idMecanico = parseInt(body.idMecanico, 10);
         const idServicio = parseInt(body.idServicio, 10);
     
-        // Verificar si los valores son válidos
         if (isNaN(idMecanico)) {
             console.error('ID de mecánico inválido:', body.idMecanico);
             throw new Error('El ID del mecánico no es válido: ' + body.idMecanico);
@@ -50,24 +30,22 @@ module.exports = function (dbinyectada) {
             throw new Error('El ID del servicio no es válido: ' + body.idServicio);
         }
     
-        // Construcción del objeto de la orden
         const orden = {
             detalleReparacion: body.detalleReparacion,
             costoEstimado: body.costoEstimado,
             estado: body.estado,
             idVehiculo: body.idVehiculo,
             idCliente: body.idCliente,
-            idMecanico: idMecanico,  // ID de mecánico validado
+            idMecanico: idMecanico,  
             concepto: body.concepto,
             combustible: body.combustible,
-            servicio_id: idServicio,  // ID de servicio validado
-            fechaIngreso: body.fechaIngreso || new Date(),  // Añadimos la fecha de ingreso
+            servicio_id: idServicio,  
+            fechaIngreso: body.fechaIngreso || new Date(),  
             tipoPago: body.tipoPago,
             estadoPago: body.estadoPago,
             adelantoEmpresa: body.adelantoEmpresa || 0
         };
     
-        // Intentamos agregar la orden a la base de datos
         try {
             return await db.agregar(TABLA, orden);
         } catch (error) {
@@ -78,7 +56,7 @@ module.exports = function (dbinyectada) {
 
     async function actualizar(id, body) {
         const idMecanico = parseInt(body.idMecanico, 10);
-        const idServicio = parseInt(body.idServicio, 10);  // Convertimos idServicio a número
+        const idServicio = parseInt(body.idServicio, 10);  
 
         if (isNaN(idMecanico) || isNaN(idServicio)) {
             throw new Error('El ID del mecánico o del servicio no es válido');
@@ -94,18 +72,18 @@ module.exports = function (dbinyectada) {
             concepto: body.concepto,
             combustible: body.combustible,
             servicio_id: idServicio,
-            fechaIngreso: body.fechaIngreso,  // Actualizamos la fecha de ingreso
-            tipoPago: body.tipoPago,  // Actualizamos el tipo de pago
-            estadoPago: body.estadoPago,  // Actualizamos el estado del pago
-            adelantoEmpresa: body.adelantoEmpresa  // Actualizamos el adelanto de la empresa
+            fechaIngreso: body.fechaIngreso,  
+            tipoPago: body.tipoPago,  
+            estadoPago: body.estadoPago,
+            adelantoEmpresa: body.adelantoEmpresa  
         };
 
         const resultado = await db.actualizar(TABLA, id, orden);
 
-        // Registrar ingreso en la caja si el pago se ha completado y no se había registrado antes
-        if (body.estadoPago === 'Pagado') {
-            await cajaControlador.registrarIngreso(id, body.costoEstimado, 'Pago por orden de servicio');
-        }
+        // Comentado para evitar error por referencia no definida
+        // if (body.estadoPago === 'Pagado') {
+        //     await cajaControlador.registrarIngreso(id, body.costoEstimado, 'Pago por orden de servicio');
+        // }
 
         return resultado;
     }
@@ -114,11 +92,90 @@ module.exports = function (dbinyectada) {
         return db.eliminar(TABLA, id);
     }
 
+
+    async function historialPorPlaca(placa) {
+        const sql = `
+            SELECT 
+                ordenesservicio.id AS numeroOrden,
+                ordenesservicio.detalleReparacion,
+                ordenesservicio.costoEstimado,
+                ordenesservicio.estado,
+                ordenesservicio.estadoPago,
+                ordenesservicio.tipoPago,
+                ordenesservicio.fechaIngreso,
+                clientes.nombre AS nombreCliente  -- Incluir el nombre del cliente
+            FROM ordenesservicio
+            JOIN vehiculos ON ordenesservicio.idVehiculo = vehiculos.id
+            JOIN clientes ON ordenesservicio.idCliente = clientes.id
+            WHERE vehiculos.placa = ?;
+        `;
+    
+        return new Promise((resolve, reject) => {
+            db.conexion.query(sql, [placa], (error, result) => {
+                if (error) {
+                    console.error('[Error en la consulta]', error);
+                    return reject(error);
+                }
+                console.log("Resultado de la consulta:", result); // Verificar la salida
+                resolve(result); // Devolver todos los registros encontrados
+            });
+        });
+    }
+    
+    async function ordenesPorEstado() {
+        const sql = `
+            SELECT estado, COUNT(*) AS cantidad
+            FROM ordenesservicio
+            GROUP BY estado;
+        `;
+        return new Promise((resolve, reject) => {
+            db.conexion.query(sql, (error, results) => {
+                if (error) {
+                    console.error('[Error en ordenesPorEstado]', error);
+                    return reject(error);
+                }
+                console.log('Resultados de ordenesPorEstado:', results);  // Debugging
+                resolve(results);
+            });
+        });
+    }
+    
+    
+    async function serviciosMasSolicitados() {
+        const sql = `
+            SELECT 
+                servicios.descripcion AS nombreServicio, 
+                COUNT(*) AS cantidad
+            FROM 
+                ordenesservicio
+            JOIN 
+                servicios ON ordenesservicio.servicio_id = servicios.id
+            GROUP BY 
+                servicios.descripcion
+            ORDER BY 
+                cantidad DESC
+            LIMIT 5;
+        `;
+        
+        return new Promise((resolve, reject) => {
+            db.conexion.query(sql, (error, results) => {
+                if (error) {
+                    console.error('[Error en serviciosMasSolicitados]', error);
+                    return reject(error);
+                }
+                resolve(results);
+            });
+        });
+    }
+
     return {
         uno,
         todos,
         agregar,
         actualizar,
-        eliminar
+        eliminar,
+        historialPorPlaca,
+        ordenesPorEstado,
+        serviciosMasSolicitados
     };
 };

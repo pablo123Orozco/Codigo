@@ -1,124 +1,124 @@
-/* Estilos generales */
-.container-custom {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  h2 {
-    color: #007bff;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 30px;
-  }
-  
-  /* Estilos del formulario */
-  .form-horizontal {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .form-horizontal .form-group {
-    margin-bottom: 1.5rem;
-  }
-  
-  .form-horizontal .form-control {
-    border-radius: 4px;
-    border: 1px solid #ced4da;
-  }
-  
-  .form-horizontal .btn {
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    font-size: 18px;
-    transition: background-color 0.3s;
-  }
-  
-  .form-horizontal .btn-primary {
-    background-color: #28a745;
-    color: white;
-  }
-  
-  .form-horizontal .btn-primary:hover {
-    background-color: #218838;
-  }
-  
-  .form-horizontal .btn-update {
-    background-color: #ffc107;
-    color: white;
-    border-radius: 5px;
-  }
-  
-  .form-horizontal .btn-update:hover {
-    background-color: #e0a800;
-  }
-  
-  /* Estilos de la tabla */
-  .table-custom {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .table-custom thead {
-    background-color: #007bff;
-    color: white;
-  }
-  
-  .table-custom tbody tr:nth-child(odd) {
-    background-color: #f8f9fa;
-  }
-  
-  .table-custom tbody tr:nth-child(even) {
-    background-color: white;
-  }
-  
-  .table-custom .btn-edit {
-    background-color: #ffc107;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-  }
-  
-  .table-custom .btn-edit:hover {
-    background-color: #e0a800;
-  }
-  
-  .table-custom .btn-delete {
-    background-color: #dc3545;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-  }
-  
-  .table-custom .btn-delete:hover {
-    background-color: #c82333;
-  }
-  
-  /* Modal Custom Styles */
-  .modal-custom .modal-content {
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .modal-custom .modal-header {
-    background-color: #007bff;
-    color: white;
-    border-bottom: none;
-  }
-  
-  .modal-custom .modal-footer {
-    border-top: none;
-  }
-  
+  /* Estilos generales */
+  .container-custom {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    h2 {
+      color: #007bff;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    /* Estilos del formulario */
+    .form-horizontal {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-horizontal .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-horizontal .form-control {
+      border-radius: 4px;
+      border: 1px solid #ced4da;
+    }
+    
+    .form-horizontal .btn {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 18px;
+      transition: background-color 0.3s;
+    }
+    
+    .form-horizontal .btn-primary {
+      background-color: #28a745;
+      color: white;
+    }
+    
+    .form-horizontal .btn-primary:hover {
+      background-color: #218838;
+    }
+    
+    .form-horizontal .btn-update {
+      background-color: #ffc107;
+      color: white;
+      border-radius: 5px;
+    }
+    
+    .form-horizontal .btn-update:hover {
+      background-color: #e0a800;
+    }
+    
+    /* Estilos de la tabla */
+    .table-custom {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .table-custom thead {
+      background-color: #007bff;
+      color: white;
+    }
+    
+    .table-custom tbody tr:nth-child(odd) {
+      background-color: #f8f9fa;
+    }
+    
+    .table-custom tbody tr:nth-child(even) {
+      background-color: white;
+    }
+    
+    .table-custom .btn-edit {
+      background-color: #ffc107;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    
+    .table-custom .btn-edit:hover {
+      background-color: #e0a800;
+    }
+    
+    .table-custom .btn-delete {
+      background-color: #dc3545;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    
+    .table-custom .btn-delete:hover {
+      background-color: #c82333;
+    }
+    
+    /* Modal Custom Styles */
+    .modal-custom .modal-content {
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .modal-custom .modal-header {
+      background-color: #007bff;
+      color: white;
+      border-bottom: none;
+    }
+    
+    .modal-custom .modal-footer {
+      border-top: none;
+    }
+    

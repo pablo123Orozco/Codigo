@@ -1,8 +1,9 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';  // Para redirigir al usuario
+import { useNavigate, Link } from 'react-router-dom';  // Asegúrate de importar Link correctamente
 import { Navbar, Nav, Dropdown } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './navbar.css';
+import Logo from '../assets/Imagenes/logo2.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 
@@ -15,25 +16,20 @@ const CustomNavbar: React.FC<NavbarProps> = ({ isSidebarOpen }) => {
 
   // Función que maneja el cierre de sesión
   const handleLogout = () => {
-    // Eliminar el token del almacenamiento local (localStorage)
     localStorage.removeItem('token');
-
-    // Redirigir al usuario a la página de inicio de sesión
     navigate('/login', { replace: true });
-
-    // Opcional: Refrescar la página para evitar que el usuario pueda volver con el botón "Atrás"
     window.location.reload();
   };
 
   return (
     <header className={`header${isSidebarOpen ? ' header--shift' : ''}`}>
       <div className="logo-container">
-        <img src="/path/to/logo.png"  />
+        <img src={Logo} alt="logo" className="img-fluid" />
       </div>
-      <Navbar bg="light" expand="lg" className="navbar-custom">
+      <Navbar expand="lg" className="navbar-custom">
         <Nav className="me-auto nav-container">
-          <Nav.Link href="/noticias">Usuarios</Nav.Link>
-          <Nav.Link href="/informacion-publica">Reportes</Nav.Link>
+          <Nav.Link as={Link} to="/usuarios">Usuarios</Nav.Link>
+          <Nav.Link as={Link} to="/reportes/clientes">Reportes</Nav.Link>  {/* Aquí usamos Link para redirección */}
         </Nav>
 
         <Nav className="ml-auto">
@@ -45,7 +41,6 @@ const CustomNavbar: React.FC<NavbarProps> = ({ isSidebarOpen }) => {
             <Dropdown.Menu className="custom-dropdown-menu">
               <Dropdown.Item href="/mi-perfil">Mi Perfil</Dropdown.Item>
               <Dropdown.Divider />
-              {/* Llamar a handleLogout cuando el usuario haga clic en "Cerrar Sesión" */}
               <Dropdown.Item onClick={handleLogout}>Cerrar Sesión</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
@@ -56,3 +51,4 @@ const CustomNavbar: React.FC<NavbarProps> = ({ isSidebarOpen }) => {
 };
 
 export default CustomNavbar;
+ 

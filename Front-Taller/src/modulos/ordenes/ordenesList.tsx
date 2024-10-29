@@ -1,89 +1,140 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Dropdown } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
-interface OrdenService {
-    id: number;
-    numeroOrden: number;
-    costoEstimado: number;
-    estado: string;
-    marca: string;
-    placa: string;
-    nombreCliente: string;  
-    estadoPago: string;  
-    detalleReparacion: string;
-    idVehiculo: number;
-    modelo: string;
+interface Orden {
+  id?: number;
+  numeroOrden: number;
+  detalleReparacion: string;
+  costoEstimado: number;
+  estado: string;
+  marca?: string;
+  placa?: string;
+  nombreCliente?: string;
+  nombreMecanico?: string;
+  estadoPago: string;
+  tipoPago: string;
+  idVehiculo: number;
+  idCliente: number;
+  idMecanico: number;
+  concepto: string;
+  combustible: string;
+  idServicio: number;
+  adelantoEmpresa: number;
+  fechaIngreso: string;
 }
 
-interface OrdenServiceListProps {
-    onEdit: (orden: OrdenService) => void;
-    onDelete: (id: number) => Promise<void>;
-    refresh: boolean;
+interface Cliente {
+  id: number;
+  nombre: string;
 }
 
-const OrdenServiceList: React.FC<OrdenServiceListProps> = ({ onEdit, onDelete, refresh }) => {
-    const [ordenes, setOrdenes] = useState<OrdenService[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
+interface Vehiculo {
+  id: number;
+  marca: string;
+  placa: string;
+}
 
-    useEffect(() => {
-        const fetchOrdenes = async () => {
-            try {
-                const response = await axios.get('http://localhost:4000/api/ordenes');
-                setOrdenes(response.data.body);
-                setLoading(false);
-            } catch (error) {
-                setError('Error al obtener órdenes');
-                setLoading(false);
-            }
+interface Mecanico {
+  id: number;
+  nombre: string;
+}
+
+interface OrdenListProps {
+  onEdit: (orden: Orden) => void;
+  onDelete: (id: number) => void;
+  refresh: boolean;
+}
+
+const OrdenList: React.FC<OrdenListProps> = ({ onEdit, onDelete, refresh }) => {
+  const [ordenes, setOrdenes] = useState<Orden[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchOrdenes();
+  }, [refresh]);
+
+  const fetchOrdenes = async () => {
+    try {
+      const [ordenesResponse, clientesResponse, vehiculosResponse, mecanicosResponse] = await Promise.all([
+        axios.get('http://localhost:4000/api/ordenes'),
+        axios.get('http://localhost:4000/api/clientes'),
+        axios.get('http://localhost:4000/api/vehiculos'),
+        axios.get('http://localhost:4000/api/mecanico')
+      ]);
+
+      const clientes: Cliente[] = clientesResponse.data.body;
+      const vehiculos: Vehiculo[] = vehiculosResponse.data.body;
+      const mecanicos: Mecanico[] = mecanicosResponse.data.body;
+
+      const ordenesConNombres = ordenesResponse.data.body.map((orden: Orden) => {
+        const cliente = clientes.find(c => c.id === orden.idCliente);
+        const vehiculo = vehiculos.find(v => v.id === orden.idVehiculo);
+        const mecanico = mecanicos.find(m => m.id === orden.idMecanico);
+
+        return {
+          ...orden,
+          nombreCliente: cliente ? cliente.nombre : "No disponible",
+          marca: vehiculo ? vehiculo.marca : "No disponible",
+          placa: vehiculo ? vehiculo.placa : "No disponible",
+          nombreMecanico: mecanico ? mecanico.nombre : "No disponible"
         };
+      });
 
-        fetchOrdenes();
-    }, [refresh]);
+      setOrdenes(ordenesConNombres);
+    } catch (error) {
+      console.error('Error al obtener órdenes:', error);
+      setError('Error al obtener las órdenes.');
+      setOrdenes([]);
+    }
+  };
 
-    if (loading) return <div>Cargando órdenes...</div>;
-    if (error) return <div>{error}</div>;
-
-    return (
-        <div>
-            <h2>Lista de Órdenes de Servicio</h2>
-            <table className="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Número de Orden</th>
-                        <th>Vehículo (Marca y Placa)</th>
-                        <th>Cliente</th>
-                        <th>Costo Estimado</th>
-                        <th>Estado del Pago</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {ordenes.map((orden) => (
-                        <tr key={orden.id}>
-                            <td>{orden.numeroOrden}</td>
-                            <td>{orden.marca} - {orden.placa}</td>
-                            <td>{orden.nombreCliente}</td>
-                            <td>{orden.costoEstimado}</td>
-                            <td>{orden.estadoPago}</td>
-                            <td>
-                                <Dropdown>
-                                    <Dropdown.Toggle variant="success" id="dropdown-basic">
-                                        ...
-                                    </Dropdown.Toggle>
-                                    <Dropdown.Menu>
-                                        <Dropdown.Item onClick={() => onEdit(orden)}>Editar</Dropdown.Item>
-                                        <Dropdown.Item onClick={() => onDelete(orden.id)}>Eliminar</Dropdown.Item>
-                                    </Dropdown.Menu>
-                                </Dropdown>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    );
+  return (
+    <div>
+      <h2>Lista de Órdenes de Servicio</h2>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <table className="table">
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Vehículo (Placa)</th>
+            <th>Mecánico</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {Array.isArray(ordenes) && ordenes.length > 0 ? (
+            ordenes.map((orden) => (
+              <tr key={orden.id}>
+                <td>{orden.nombreCliente}</td>
+                <td>{orden.marca} ({orden.placa})</td>
+                <td>{orden.nombreMecanico}</td>
+                <td>{orden.estado}</td>
+                <td className="actions-cell">
+                  <FontAwesomeIcon
+                    icon={faEdit}
+                    className="icon-button edit-icon"
+                    onClick={() => onEdit(orden)}
+                  />
+                  <FontAwesomeIcon
+                    icon={faTrash}
+                    className="icon-button delete-icon"
+                    onClick={() => onDelete(orden.id || 0)}
+                  />
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={6}>No hay órdenes disponibles</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
 };
 
-export default OrdenServiceList;
+export default OrdenList;

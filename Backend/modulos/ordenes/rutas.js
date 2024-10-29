@@ -4,23 +4,23 @@ const controlador = require('./index');
 
 const router = express.Router();
 
-// Obtener todas las órdenes de servicio
+
 router.get('/', todos);
 
-// Obtener una orden de servicio por su ID
-router.get('/:id', uno);
 
-// Crear una nueva orden de servicio
+
+
 router.post('/', agregar);
 
-// Actualizar una orden de servicio existente
+
 router.put('/:id', actualizar);
 
-// Eliminar una orden de servicio
+
 router.delete('/:id', eliminar);
 
 async function uno(req, res, next) {
     try {
+        console.log("ID recibido en uno:", req.params.id); // Log para verificar el ID
         const orden = await controlador.uno(req.params.id);
         if (!orden) {
             return respuesta.success(req, res, 'No se encontró la orden de servicio', 404);
@@ -45,7 +45,7 @@ async function todos(req, res, next) {
 
 async function agregar(req, res, next) {
     try {
-        const nuevaOrden = await controlador.agregar(req.body); // Incluir los nuevos campos en el body
+        const nuevaOrden = await controlador.agregar(req.body); 
         respuesta.success(req, res, 'Orden de servicio creada con éxito', 201);
     } catch (err) {
         next(err);
@@ -69,5 +69,54 @@ async function eliminar(req, res, next) {
         next(err);
     }
 }
+
+router.get('/historial/:placa', async (req, res, next) => {
+    try {
+        const { placa } = req.params;
+        const historial = await controlador.historialPorPlaca(placa);
+        res.status(200).json(historial);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get('/estado', async (req, res, next) => {
+    try {
+        const resultado = await controlador.ordenesPorEstado();
+        
+        if (!resultado || resultado.length === 0) {
+            // Verificación explícita para resultado vacío
+            return res.status(404).json({
+                error: true,
+                status: 404,
+                body: "No se encontraron registros de estado",
+            });
+        }
+        
+        res.status(200).json({
+            error: false,
+            status: 200,
+            body: resultado,
+        });
+    } catch (err) {
+        next(err);
+    }
+});
+router.get('/servicios-mas-solicitados', async (req, res, next) => {
+    try {
+        const resultado = await controlador.serviciosMasSolicitados();
+        res.status(200).json({
+            error: false,
+            status: 200,
+            body: resultado,
+        });
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get('/:id', uno);
+
+
 
 module.exports = router;

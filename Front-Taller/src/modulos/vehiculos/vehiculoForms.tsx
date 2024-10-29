@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Row, Col } from 'react-bootstrap'; // Para el diseño con Bootstrap
+import { Form, Row, Col } from 'react-bootstrap';
 
 interface Vehiculo {
     id?: number;
@@ -8,7 +8,7 @@ interface Vehiculo {
     modelo: string;
     placa: string;
     estadoActual: string;
-    year: string; // Asegurarse de que 'year' sea consistente en todas partes
+    year: string;
 }
 
 interface VehiculoFormProps {
@@ -22,7 +22,7 @@ const VehiculoForm: React.FC<VehiculoFormProps> = ({ vehiculoToEdit, onSave }) =
         modelo: '',
         placa: '',
         estadoActual: '',
-        year: '', // Se usa 'year' en lugar de 'año'
+        year: '',
     });
 
     useEffect(() => {
@@ -41,13 +41,9 @@ const VehiculoForm: React.FC<VehiculoFormProps> = ({ vehiculoToEdit, onSave }) =
 
         try {
             if (vehiculoToEdit) {
-                // Actualizar vehículo
                 await axios.put(`http://localhost:4000/api/vehiculos/${vehiculoToEdit.id}`, formData);
-                alert('Vehículo actualizado');
             } else {
-                // Crear nuevo vehículo
                 await axios.post('http://localhost:4000/api/vehiculos', formData);
-                alert('Vehículo creado');
             }
             onSave();
         } catch (error) {
@@ -111,11 +107,11 @@ const VehiculoForm: React.FC<VehiculoFormProps> = ({ vehiculoToEdit, onSave }) =
             </Row>
             <Row>
                 <Col>
-                    <Form.Group controlId="year"> {/* Cambiado 'año' a 'year' */}
+                    <Form.Group controlId="year">
                         <Form.Label>Año</Form.Label>
                         <Form.Control
                             type="text"
-                            name="year"  // Aquí es importante el cambio
+                            name="year"
                             value={formData.year}
                             placeholder="Año"
                             onChange={handleChange}

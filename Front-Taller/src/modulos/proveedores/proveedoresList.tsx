@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 interface Proveedor {
   id: number;
@@ -74,13 +76,17 @@ const ProveedorList: React.FC<ProveedorListProps> = ({ onEdit, onDelete, refresh
                 <td>{proveedor.dpi}</td>
                 <td>{proveedor.razonSocial}</td>
                 <td>{proveedor.telefono}</td>
-                <td>
-                  <button className="btn btn-edit" onClick={() => onEdit(proveedor)}>
-                    Editar
-                  </button>
-                  <button className="btn btn-delete" onClick={() => onDelete(proveedor.id)}>
-                    Eliminar
-                  </button>
+                <td className="actions-cell">
+                  <FontAwesomeIcon
+                    icon={faEdit}
+                    className="icon-button edit-icon"
+                    onClick={() => onEdit(proveedor)}
+                  />
+                  <FontAwesomeIcon
+                    icon={faTrash}
+                    className="icon-button delete-icon"
+                    onClick={() => onDelete(proveedor.id)}
+                  />
                 </td>
               </tr>
             ))

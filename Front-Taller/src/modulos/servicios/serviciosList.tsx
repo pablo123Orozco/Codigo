@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 interface Servicio {
   id: number;
@@ -8,13 +10,12 @@ interface Servicio {
   precio_repuesto: number;
   precio_total: number;
   descripcion: string;
-  orden_servicio_id: number;
 }
 
 interface ServicioListProps {
   onEdit: (servicio: Servicio) => void;
   onDelete: (id: number) => void;
-  refresh: boolean; // Para recargar los datos cuando se actualiza algo
+  refresh: boolean;
 }
 
 const ServicioList: React.FC<ServicioListProps> = ({ onEdit, onDelete, refresh }) => {
@@ -49,7 +50,7 @@ const ServicioList: React.FC<ServicioListProps> = ({ onEdit, onDelete, refresh }
   return (
     <div>
       <h2>Lista de Servicios</h2>
-      <table>
+      <table className="table table-custom">
         <thead>
           <tr>
             <th>ID</th>
@@ -58,7 +59,6 @@ const ServicioList: React.FC<ServicioListProps> = ({ onEdit, onDelete, refresh }
             <th>Precio de Repuestos</th>
             <th>Precio Total</th>
             <th>Descripción</th>
-            <th>ID Orden Servicio</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -72,10 +72,17 @@ const ServicioList: React.FC<ServicioListProps> = ({ onEdit, onDelete, refresh }
                 <td>{servicio.precio_repuesto}</td>
                 <td>{servicio.precio_total}</td>
                 <td>{servicio.descripcion}</td>
-                <td>{servicio.orden_servicio_id}</td>
-                <td>
-                  <button onClick={() => onEdit(servicio)}>Editar</button>
-                  <button onClick={() => onDelete(servicio.id)}>Eliminar</button>
+                <td className="actions-cell">
+                  <FontAwesomeIcon
+                    icon={faEdit}
+                    className="icon-button edit-icon"
+                    onClick={() => onEdit(servicio)}
+                  />
+                  <FontAwesomeIcon
+                    icon={faTrash}
+                    className="icon-button delete-icon"
+                    onClick={() => onDelete(servicio.id)}
+                  />
                 </td>
               </tr>
             ))

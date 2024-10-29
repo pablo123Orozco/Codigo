@@ -1,25 +1,27 @@
+// App.tsx
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './componentes/login';
 import Dashboard from './componentes/dashboard';
-import UserModule from './modulos/usuario/usuarios';  
-import ClienteModule from './modulos/clientes/clientes';  
+import UserModule from './modulos/usuario/usuarios';
+import ClienteModule from './modulos/clientes/clientes';
 import ProveedoresModule from './modulos/proveedores/proveedores';
-import VehiculoModule from './modulos/vehiculos/vehiculo';  
-import OrdenesServicioModule from './modulos/ordenes/ordenes';  
-import CompraModule from './modulos/compras/compras';  
-import MecanicoModule from './modulos/mecanico/mecanico';  
-import ServicioModule from './modulos/servicios/servicios';  
-import CajaModule from './modulos/caja/caja';  // Nueva importación del módulo de caja
-import PrivateRoute from './componentes/PrivateRoute';  
-import OrdenServiceForm from './modulos/ordenes/ordenesForms';  
+import VehiculoModule from './modulos/vehiculos/vehiculo';
+import OrdenesServicioModule from './modulos/ordenes/ordenes';
+import CompraModule from './modulos/compras/compras';
+import MecanicoModule from './modulos/mecanico/mecanico';
+import ServicioModule from './modulos/servicios/servicios';
+import CajaModule from './modulos/caja/caja';
+import ReportesModule from './modulos/reportes/Reportes'; // Reporte de Clientes
+import ReportesCompras from './modulos/reportes/ReporteCompra'; // Reporte de Compras
+import PrivateRoute from './componentes/PrivateRoute';
 import ServicioForm from './modulos/servicios/serviciosForms';
-import { useState } from 'react';  // Importamos useState
+import { useState } from 'react';
 
 function App() {
-  const [servicioToEdit, setServicioToEdit] = useState(null);  // Estado para editar servicio
+  const [servicioToEdit, setServicioToEdit] = useState(null);
 
   const handleSaveServicio = () => {
-    setServicioToEdit(null);  // Limpiar el estado después de guardar
+    setServicioToEdit(null);
   };
 
   return (
@@ -34,15 +36,9 @@ function App() {
           <Route path="/proveedores" element={<ProveedoresModule />} />
           <Route path="/vehiculos" element={<VehiculoModule />} />
           <Route path="/ordenes" element={<OrdenesServicioModule />} />
-          
-          {/* Nueva ruta para crear una orden de servicio */}
-          <Route path="/ordenes/nueva" element={<OrdenServiceForm />} />  
-
           <Route path="/compras" element={<CompraModule />} />
           <Route path="/mecanico" element={<MecanicoModule />} />
-
-          {/* Nueva ruta para el módulo de servicios */}
-          <Route path="/servicios" element={<ServicioModule />} /> 
+          <Route path="/servicios" element={<ServicioModule />} />
 
           {/* Ruta para crear un nuevo servicio */}
           <Route 
@@ -56,10 +52,15 @@ function App() {
             element={<ServicioForm servicioToEdit={servicioToEdit} onSave={handleSaveServicio} />} 
           />
 
-          {/* Nueva ruta para el módulo de caja */}
-          <Route path="/caja" element={<CajaModule />} />  {/* Añadimos la ruta de caja */}
+          {/* Ruta para el módulo de caja */}
+          <Route path="/caja" element={<CajaModule />} />
+
+          {/* Rutas para el módulo de reportes */}
+          <Route path="/reportes/clientes" element={<ReportesModule />} />
+          <Route path="/reportes/compras" element={<ReportesCompras />} />
         </Route>
 
+        {/* Redirigir cualquier ruta no existente al login */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>

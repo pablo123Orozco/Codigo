@@ -42,11 +42,42 @@ module.exports = function (dbinyectada) {
         return db.eliminar(TABLA, id);
     }
 
+    async function obtenerSugerenciasPlacas(query) {
+        const sql = 'SELECT placa FROM vehiculos WHERE placa LIKE ?';
+        const values = [`${query}%`];
+    
+        try {
+            // Si `db.conexion.query` devuelve una sola respuesta en lugar de un array, quita la desestructuración
+            const resultados = await new Promise((resolve, reject) => {
+                db.conexion.query(sql, values, (error, results) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(results);
+                });
+            });
+    
+            // Asegúrate de que `resultados` sea un array antes de iterar
+            if (!Array.isArray(resultados)) {
+                throw new Error("La respuesta de la base de datos no es un array");
+            }
+    
+            // Devuelve solo las placas en un array simple
+            return resultados.map(row => row.placa);
+        } catch (error) {
+            console.error('Error en obtenerSugerenciasPlacas:', error);
+            throw error;
+        }
+    }
+
+    
+    
     return {
         uno,
         todos,
         agregar,
         actualizar,
-        eliminar
+        eliminar,
+        obtenerSugerenciasPlacas
     };
 };

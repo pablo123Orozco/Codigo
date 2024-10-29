@@ -9,12 +9,6 @@ interface Servicio {
   precio_repuesto: number;
   precio_total: number;
   descripcion: string;
-  orden_servicio_id: number;
-}
-
-interface OrdenServicio {
-  id: number;
-  numeroOrden: number; // o el campo que identifique la orden de servicio
 }
 
 interface ServicioFormProps {
@@ -27,45 +21,30 @@ const ServicioForm: React.FC<ServicioFormProps> = ({ servicioToEdit, onSave }) =
     servicio: '',
     costo_mano_obra: 0,
     precio_repuesto: 0,
-    precio_total: 0,  // Se calculará automáticamente
+    precio_total: 0,
     descripcion: '',
-    orden_servicio_id: 0,
   });
 
-  const [ordenesServicio, setOrdenesServicio] = useState<OrdenServicio[]>([]); // Estado para las órdenes de servicio
-
-  // Cargar los datos si estamos editando
   useEffect(() => {
     if (servicioToEdit) {
       setFormData(servicioToEdit);
     }
   }, [servicioToEdit]);
 
-  // Cargar las órdenes de servicio desde la base de datos
   useEffect(() => {
-    const fetchOrdenesServicio = async () => {
-      try {
-        const response = await axios.get('http://localhost:4000/api/ordenes'); // Ajusta la URL según tu API
-        setOrdenesServicio(response.data.body); // Ajusta 'body' según el formato de respuesta de tu API
-      } catch (error) {
-        console.error('Error al obtener las órdenes de servicio:', error);
-      }
-    };
-
-    fetchOrdenesServicio();
-  }, []);
-
-  // Actualizamos el costo total automáticamente cada vez que cambien los valores de costo_mano_obra o precio_repuesto
-  useEffect(() => {
-    const precioTotalCalculado = formData.costo_mano_obra + formData.precio_repuesto;
-    setFormData((prevData) => ({ ...prevData, precio_total: precioTotalCalculado }));
+    const costoManoObra = isNaN(formData.costo_mano_obra) ? 0 : formData.costo_mano_obra;
+    const precioRepuesto = isNaN(formData.precio_repuesto) ? 0 : formData.precio_repuesto;
+    setFormData((prevData) => ({ ...prevData, precio_total: costoManoObra + precioRepuesto }));
   }, [formData.costo_mano_obra, formData.precio_repuesto]);
 
   const handleChange = (e: React.ChangeEvent<any>) => {
     const { name, value, type } = e.target;
-    
-    if (type === 'number' || name.includes('precio') || name === 'costo_mano_obra' || name === 'orden_servicio_id') {
-      setFormData({ ...formData, [name]: parseFloat(value) });
+    if (type === 'number') {
+      const parsedValue = parseFloat(value);
+      setFormData({
+        ...formData,
+        [name]: isNaN(parsedValue) ? 0 : parsedValue,
+      });
     } else {
       setFormData({ ...formData, [name]: value });
     }
@@ -76,15 +55,11 @@ const ServicioForm: React.FC<ServicioFormProps> = ({ servicioToEdit, onSave }) =
 
     try {
       if (servicioToEdit) {
-        // Actualizar servicio existente
         await axios.put(`http://localhost:4000/api/servicios/${servicioToEdit.id}`, formData);
-        alert('Servicio actualizado');
       } else {
-        // Crear nuevo servicio
         await axios.post('http://localhost:4000/api/servicios', formData);
-        alert('Servicio creado');
       }
-      onSave();
+      onSave(); // Activa el modal de éxito al guardar sin usar alert()
     } catch (error) {
       console.error('Error al guardar el servicio:', error);
     }
@@ -104,13 +79,9 @@ const ServicioForm: React.FC<ServicioFormProps> = ({ servicioToEdit, onSave }) =
               onChange={handleChange}
               required
             />
-            <Form.Text className="text-muted">
-              Ejemplo: Mantenimiento General, Cambio de Filtro, etc.
-            </Form.Text>
           </Form.Group>
         </Col>
       </Row>
-
       <Row>
         <Col>
           <Form.Group controlId="costo_mano_obra">
@@ -119,7 +90,7 @@ const ServicioForm: React.FC<ServicioFormProps> = ({ servicioToEdit, onSave }) =
               type="number"
               name="costo_mano_obra"
               placeholder="Ingrese el costo de mano de obra"
-              value={formData.costo_mano_obra}
+              value={formData.costo_mano_obra || ''}
               onChange={handleChange}
               required
             />
@@ -132,14 +103,13 @@ const ServicioForm: React.FC<ServicioFormProps> = ({ servicioToEdit, onSave }) =
               type="number"
               name="precio_repuesto"
               placeholder="Ingrese el precio de los repuestos"
-              value={formData.precio_repuesto}
+              value={formData.precio_repuesto || ''}
               onChange={handleChange}
               required
             />
           </Form.Group>
         </Col>
       </Row>
-
       <Row>
         <Col>
           <Form.Group controlId="precio_total">
@@ -148,13 +118,12 @@ const ServicioForm: React.FC<ServicioFormProps> = ({ servicioToEdit, onSave }) =
               type="number"
               name="precio_total"
               placeholder="Precio total"
-              value={formData.precio_total}
-              readOnly // Campo no editable
+              value={formData.precio_total || 0}
+              readOnly
             />
           </Form.Group>
         </Col>
       </Row>
-
       <Row>
         <Col>
           <Form.Group controlId="descripcion">
@@ -170,29 +139,6 @@ const ServicioForm: React.FC<ServicioFormProps> = ({ servicioToEdit, onSave }) =
           </Form.Group>
         </Col>
       </Row>
-
-      <Row>
-        <Col>
-          <Form.Group controlId="orden_servicio_id">
-            <Form.Label>Orden de Servicio</Form.Label>
-            <Form.Control
-              as="select"
-              name="orden_servicio_id"
-              value={formData.orden_servicio_id}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Seleccionar Orden de Servicio</option>
-              {ordenesServicio.map((orden) => (
-                <option key={orden.id} value={orden.id}>
-                  {orden.numeroOrden} {/* Puedes mostrar más datos aquí si lo deseas */}
-                </option>
-              ))}
-            </Form.Control>
-          </Form.Group>
-        </Col>
-      </Row>
-
       <Button type="submit" variant="primary">
         {servicioToEdit ? 'Actualizar' : 'Agregar'} Servicio
       </Button>

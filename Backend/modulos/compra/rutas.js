@@ -5,11 +5,29 @@ const controlador = require('./index');
 const router = express.Router();
 
 
-router.get('/', todos);                 
-router.get('/:id', uno);               
-router.post('/', agregar);             
-router.put('/:id', actualizar);        
-router.delete('/:id', eliminar);       
+router.get('/historial/:nombreCliente', async (req, res, next) => {
+    try {
+        const nombreCliente = req.params.nombreCliente;
+        const historial = await controlador.historialComprasPorCliente(nombreCliente);
+        respuesta.success(req, res, historial, 200);
+    } catch (err) {
+        next(err);
+    }
+});
+
+
+router.get('/mes', async (req, res, next) => {
+    try {
+        const resultado = await controlador.comprasPorMes();
+        res.status(200).json({
+            error: false,
+            status: 200,
+            body: resultado,
+        });
+    } catch (err) {
+        next(err);
+    }
+});
 
 
 async function todos(req, res, next) {
@@ -56,5 +74,13 @@ async function eliminar(req, res, next) {
         next(err);
     }
 }
+
+
+router.get('/', todos);                 
+router.get('/:id', uno);               
+router.post('/', agregar);             
+router.put('/:id', actualizar);        
+router.delete('/:id', eliminar);
+
 
 module.exports = router;

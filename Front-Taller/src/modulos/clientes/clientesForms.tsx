@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
+import './clientes.css';
 
 interface Cliente {
   id?: number;
@@ -15,9 +16,10 @@ interface Cliente {
 interface ClienteFormProps {
   clienteToEdit: Cliente | null;
   onSave: () => void;
+  setShowSuccessModal: React.Dispatch<React.SetStateAction<boolean>>; // Nueva prop para el modal de éxito
 }
 
-const ClienteForm: React.FC<ClienteFormProps> = ({ clienteToEdit, onSave }) => {
+const ClienteForm: React.FC<ClienteFormProps> = ({ clienteToEdit, onSave, setShowSuccessModal }) => {
   const [formData, setFormData] = useState<Cliente>({
     nombre: '',
     apellido: '',
@@ -48,23 +50,16 @@ const ClienteForm: React.FC<ClienteFormProps> = ({ clienteToEdit, onSave }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (clienteToEdit) {
-      try {
+    try {
+      if (clienteToEdit) {
         await axios.put(`http://localhost:4000/api/clientes/${clienteToEdit.id}`, formData);
-        alert('Cliente actualizado');
-        onSave();
-      } catch (error) {
-        console.error('Error al actualizar cliente:', error);
-      }
-    } else {
-      try {
+      } else {
         await axios.post('http://localhost:4000/api/clientes', formData);
-        alert('Cliente creado');
-        onSave();
-      } catch (error) {
-        console.error('Error al crear cliente:', error);
       }
+      onSave(); // Llama a onSave para actualizar el estado del componente padre
+      setShowSuccessModal(true); // Muestra el modal de éxito
+    } catch (error) {
+      console.error('Error al guardar cliente:', error);
     }
   };
 
@@ -102,60 +97,60 @@ const ClienteForm: React.FC<ClienteFormProps> = ({ clienteToEdit, onSave }) => {
           <Col md={6}>
             <Form.Group controlId="nit">
               <Form.Label>NIT</Form.Label>
-              <Form.Control
-                type="text"
-                name="nit"
-                placeholder="NIT"
-                value={formData.nit}
-                onChange={handleChange}
-              />
-            </Form.Group>
-          </Col>
-          <Col md={6}>
-            <Form.Group controlId="telefono">
-              <Form.Label>Teléfono</Form.Label>
-              <Form.Control
-                type="text"
-                name="telefono"
-                placeholder="Teléfono"
-                value={formData.telefono}
-                onChange={handleChange}
-              />
-            </Form.Group>
-          </Col>
-        </Row>
-        <Row>
-          <Col md={6}>
-            <Form.Group controlId="correo">
-              <Form.Label>Correo</Form.Label>
-              <Form.Control
-                type="email"
-                name="correo"
-                placeholder="Correo"
-                value={formData.correo}
-                onChange={handleChange}
-              />
-            </Form.Group>
-          </Col>
-          <Col md={6}>
-            <Form.Group controlId="estadoCuenta">
-              <Form.Label>Estado de Cuenta</Form.Label>
-              <Form.Control
-                type="text"
-                name="estadoCuenta"
-                placeholder="Estado de Cuenta"
-                value={formData.estadoCuenta}
-                onChange={handleChange}
-              />
-            </Form.Group>
-          </Col>
-        </Row>
-        <Button variant="primary" type="submit" className="mt-3">
-          {clienteToEdit ? 'Actualizar' : 'Agregar'}
-        </Button>
-      </Form>
-    </Container>
-  );
+            <Form.Control
+              type="text"
+              name="nit"
+              placeholder="NIT"
+              value={formData.nit}
+              onChange={handleChange}
+            />
+          </Form.Group>
+        </Col>
+        <Col md={6}>
+          <Form.Group controlId="telefono">
+            <Form.Label>Teléfono</Form.Label>
+            <Form.Control
+              type="text"
+              name="telefono"
+              placeholder="Teléfono"
+              value={formData.telefono}
+              onChange={handleChange}
+            />
+          </Form.Group>
+        </Col>
+      </Row>
+      <Row>
+        <Col md={6}>
+          <Form.Group controlId="correo">
+            <Form.Label>Correo</Form.Label>
+            <Form.Control
+              type="email"
+              name="correo"
+              placeholder="Correo"
+              value={formData.correo}
+              onChange={handleChange}
+            />
+          </Form.Group>
+        </Col>
+        <Col md={6}>
+          <Form.Group controlId="estadoCuenta">
+            <Form.Label>Estado de Cuenta</Form.Label>
+            <Form.Control
+              type="text"
+              name="estadoCuenta"
+              placeholder="Estado de Cuenta"
+              value={formData.estadoCuenta}
+              onChange={handleChange}
+            />
+          </Form.Group>
+        </Col>
+      </Row>
+      <Button variant="primary" type="submit" className="mt-3">
+        {clienteToEdit ? 'Actualizar' : 'Agregar'}
+      </Button>
+    </Form>
+  </Container>
+);
 };
 
 export default ClienteForm;

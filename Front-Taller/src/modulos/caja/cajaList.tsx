@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 interface Caja {
   id: number;
@@ -7,7 +9,6 @@ interface Caja {
   monto: number;
   tipo: string;
   fecha: string;
-  idOrdenServicio: number;
 }
 
 interface CajaListProps {
@@ -46,7 +47,6 @@ const CajaList: React.FC<CajaListProps> = ({ onEdit, onDelete, refresh }) => {
             <th>Monto</th>
             <th>Tipo</th>
             <th>Fecha</th>
-            <th>Orden de Servicio</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -59,16 +59,23 @@ const CajaList: React.FC<CajaListProps> = ({ onEdit, onDelete, refresh }) => {
                 <td>{caja.monto}</td>
                 <td>{caja.tipo}</td>
                 <td>{new Date(caja.fecha).toISOString().split('T')[0]}</td>
-                <td>{caja.idOrdenServicio ? `Orden #${caja.idOrdenServicio}` : 'N/A'}</td>
-                <td>
-                  <button className="btn btn-edit" onClick={() => onEdit(caja)}>Editar</button>
-                  <button className="btn btn-delete" onClick={() => onDelete(caja.id)}>Eliminar</button>
+                <td className="actions-cell">
+                  <FontAwesomeIcon
+                    icon={faEdit}
+                    className="icon-button edit-icon"
+                    onClick={() => onEdit(caja)}
+                  />
+                  <FontAwesomeIcon
+                    icon={faTrash}
+                    className="icon-button delete-icon"
+                    onClick={() => onDelete(caja.id)}
+                  />
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={7}>No hay registros disponibles</td>
+              <td colSpan={6}>No hay registros disponibles</td>
             </tr>
           )}
         </tbody>
