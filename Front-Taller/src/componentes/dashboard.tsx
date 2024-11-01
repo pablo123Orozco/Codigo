@@ -1,5 +1,3 @@
-// src/componentes/dashboard.tsx
-
 import React, { useState, useEffect } from 'react';
 import Navbar from './navbar';
 import Sidebar from './Sidebar';
@@ -44,9 +42,7 @@ const Dashboard: React.FC = () => {
         <Sidebar toggleSidebar={toggleSidebar} />
 
         <div className="content p-4">
-          <h1 className="mb-4">Bienvenido al Dashboard</h1>
-
-          {/* Tarjetas de resumen */}
+          <h1 className="mb-4">Menu Principal</h1>
           <Container fluid>
             <Row>
               <Col md={4}>
@@ -62,14 +58,6 @@ const Dashboard: React.FC = () => {
                   <Card.Body>
                     <Card.Title>Vehículos Registrados</Card.Title>
                     <Card.Text>{vehiculosCount} Vehículos</Card.Text>
-                  </Card.Body>
-                </Card>
-              </Col>
-              <Col md={4}>
-                <Card className="mb-4 shadow-sm">
-                  <Card.Body>
-                    <Card.Title>Ganancias Mensuales</Card.Title>
-                    <Card.Text></Card.Text>
                   </Card.Body>
                 </Card>
               </Col>

@@ -22,6 +22,8 @@ const ServicioList: React.FC<ServicioListProps> = ({ onEdit, onDelete, refresh }
   const [servicios, setServicios] = useState<Servicio[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     fetchServicios();
@@ -38,6 +40,16 @@ const ServicioList: React.FC<ServicioListProps> = ({ onEdit, onDelete, refresh }
       setLoading(false);
     }
   };
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const totalPages = Math.ceil(servicios.length / itemsPerPage);
+  const currentServicios = servicios.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   if (loading) {
     return <div>Cargando servicios...</div>;
@@ -63,8 +75,8 @@ const ServicioList: React.FC<ServicioListProps> = ({ onEdit, onDelete, refresh }
           </tr>
         </thead>
         <tbody>
-          {servicios.length > 0 ? (
-            servicios.map((servicio) => (
+          {currentServicios.length > 0 ? (
+            currentServicios.map((servicio) => (
               <tr key={servicio.id}>
                 <td>{servicio.id}</td>
                 <td>{servicio.servicio}</td>
@@ -88,11 +100,22 @@ const ServicioList: React.FC<ServicioListProps> = ({ onEdit, onDelete, refresh }
             ))
           ) : (
             <tr>
-              <td colSpan={8}>No hay servicios disponibles</td>
+              <td colSpan={7}>No hay servicios disponibles</td>
             </tr>
           )}
         </tbody>
       </table>
+      <div className="pagination">
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index}
+            onClick={() => handlePageChange(index + 1)}
+            disabled={currentPage === index + 1}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

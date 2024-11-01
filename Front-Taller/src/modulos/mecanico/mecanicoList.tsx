@@ -18,6 +18,8 @@ interface MecanicoListProps {
 const MecanicoList: React.FC<MecanicoListProps> = ({ onEdit, onDelete, refresh }) => {
   const [mecanicos, setMecanicos] = useState<Mecanico[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchMecanicos = async () => {
@@ -40,7 +42,17 @@ const MecanicoList: React.FC<MecanicoListProps> = ({ onEdit, onDelete, refresh }
     fetchMecanicos();
   }, [refresh]);
 
-  const formatFecha = (fecha: string) => fecha.split('T')[0]; // Extrae solo la parte de la fecha (YYYY-MM-DD)
+  const formatFecha = (fecha: string) => fecha.split('T')[0];
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const totalPages = Math.ceil(mecanicos.length / itemsPerPage);
+  const currentMecanicos = mecanicos.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div className="container-custom">
@@ -56,8 +68,8 @@ const MecanicoList: React.FC<MecanicoListProps> = ({ onEdit, onDelete, refresh }
           </tr>
         </thead>
         <tbody>
-          {mecanicos.length > 0 ? (
-            mecanicos.map((mecanico) => (
+          {currentMecanicos.length > 0 ? (
+            currentMecanicos.map((mecanico) => (
               <tr key={`${mecanico.id}-${mecanico.nombre}`}>
                 <td>{mecanico.id}</td>
                 <td>{mecanico.nombre}</td>
@@ -83,6 +95,25 @@ const MecanicoList: React.FC<MecanicoListProps> = ({ onEdit, onDelete, refresh }
           )}
         </tbody>
       </table>
+      <div className="pagination">
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index}
+            onClick={() => handlePageChange(index + 1)}
+            disabled={currentPage === index + 1}
+            style={{
+              color: currentPage === index + 1 ? 'blue' : 'red',
+              fontWeight: currentPage === index + 1 ? 'bold' : 'normal',
+              border: '1px solid #ccc',
+              borderRadius: '5px',
+              margin: '0 5px',
+              padding: '5px 10px',
+            }}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

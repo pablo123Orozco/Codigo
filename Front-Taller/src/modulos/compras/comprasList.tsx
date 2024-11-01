@@ -35,6 +35,8 @@ const CompraList: React.FC<CompraListProps> = ({ onEdit, onDelete, refresh }) =>
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     fetchCompras();
@@ -80,6 +82,16 @@ const CompraList: React.FC<CompraListProps> = ({ onEdit, onDelete, refresh }) =>
     return cliente ? cliente.nombre : 'Cliente no encontrado';
   };
 
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const totalPages = Math.ceil(compras.length / itemsPerPage);
+  const currentCompras = compras.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
     <div className="container-custom">
       <h2>Lista de Compras</h2>
@@ -99,8 +111,8 @@ const CompraList: React.FC<CompraListProps> = ({ onEdit, onDelete, refresh }) =>
           </tr>
         </thead>
         <tbody>
-          {compras.length > 0 ? (
-            compras.map((compra) => (
+          {currentCompras.length > 0 ? (
+            currentCompras.map((compra) => (
               <tr key={compra.id}>
                 <td>{compra.id}</td>
                 <td>{compra.nombreProducto}</td>
@@ -131,6 +143,17 @@ const CompraList: React.FC<CompraListProps> = ({ onEdit, onDelete, refresh }) =>
           )}
         </tbody>
       </table>
+      <div className="pagination">
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index}
+            onClick={() => handlePageChange(index + 1)}
+            disabled={currentPage === index + 1}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

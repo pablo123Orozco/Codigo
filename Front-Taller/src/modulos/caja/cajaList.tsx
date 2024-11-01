@@ -20,6 +20,8 @@ interface CajaListProps {
 const CajaList: React.FC<CajaListProps> = ({ onEdit, onDelete, refresh }) => {
   const [registros, setRegistros] = useState<Caja[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     fetchRegistros();
@@ -34,6 +36,16 @@ const CajaList: React.FC<CajaListProps> = ({ onEdit, onDelete, refresh }) => {
       setError('Error al obtener los registros de caja.');
     }
   };
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const totalPages = Math.ceil(registros.length / itemsPerPage);
+  const currentRegistros = registros.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div className="container-custom">
@@ -51,8 +63,8 @@ const CajaList: React.FC<CajaListProps> = ({ onEdit, onDelete, refresh }) => {
           </tr>
         </thead>
         <tbody>
-          {registros.length > 0 ? (
-            registros.map((caja) => (
+          {currentRegistros.length > 0 ? (
+            currentRegistros.map((caja) => (
               <tr key={caja.id}>
                 <td>{caja.id}</td>
                 <td>{caja.concepto}</td>
@@ -80,6 +92,17 @@ const CajaList: React.FC<CajaListProps> = ({ onEdit, onDelete, refresh }) => {
           )}
         </tbody>
       </table>
+      <div className="pagination">
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index}
+            onClick={() => handlePageChange(index + 1)}
+            disabled={currentPage === index + 1}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

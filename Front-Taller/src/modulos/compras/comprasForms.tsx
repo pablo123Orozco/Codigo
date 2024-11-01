@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Row, Col, Button } from 'react-bootstrap';
+import { Form, Row, Col, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
 interface Compra {
@@ -40,6 +40,7 @@ const CompraForm: React.FC<CompraFormProps> = ({ compraToEdit, onSave }) => {
     marcha: '',
   });
 
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
 
@@ -76,15 +77,27 @@ const CompraForm: React.FC<CompraFormProps> = ({ compraToEdit, onSave }) => {
     fetchClientes();
   }, [compraToEdit]);
 
-  const handleChange = (e: React.ChangeEvent<any>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    setErrors({ ...errors, [name]: '' }); // Limpia el error al editar el campo
+  };
+
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+    Object.keys(formData).forEach((field) => {
+      if (formData[field as keyof Compra] === '' || formData[field as keyof Compra] === 0) {
+        newErrors[field] = `El campo ${field} es requerido`;
+      }
     });
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
+
     try {
       if (formData.id) {
         await axios.put(`http://localhost:4000/api/compras/${formData.id}`, formData);
@@ -109,6 +122,7 @@ const CompraForm: React.FC<CompraFormProps> = ({ compraToEdit, onSave }) => {
               value={formData.nombreProducto}
               onChange={handleChange}
             />
+            {errors.nombreProducto && <Alert variant="danger">{errors.nombreProducto}</Alert>}
           </Form.Group>
         </Col>
         <Col>
@@ -120,6 +134,7 @@ const CompraForm: React.FC<CompraFormProps> = ({ compraToEdit, onSave }) => {
               value={formData.fecha}
               onChange={handleChange}
             />
+            {errors.fecha && <Alert variant="danger">{errors.fecha}</Alert>}
           </Form.Group>
         </Col>
       </Row>
@@ -134,6 +149,7 @@ const CompraForm: React.FC<CompraFormProps> = ({ compraToEdit, onSave }) => {
               value={formData.total}
               onChange={handleChange}
             />
+            {errors.total && <Alert variant="danger">{errors.total}</Alert>}
           </Form.Group>
         </Col>
         <Col>
@@ -145,6 +161,7 @@ const CompraForm: React.FC<CompraFormProps> = ({ compraToEdit, onSave }) => {
               value={formData.estado}
               onChange={handleChange}
             />
+            {errors.estado && <Alert variant="danger">{errors.estado}</Alert>}
           </Form.Group>
         </Col>
       </Row>
@@ -169,6 +186,7 @@ const CompraForm: React.FC<CompraFormProps> = ({ compraToEdit, onSave }) => {
               </Form.Control>
               <Button variant="link" onClick={() => navigate('/proveedores')}>+</Button>
             </div>
+            {errors.idProveedor && <Alert variant="danger">{errors.idProveedor}</Alert>}
           </Form.Group>
         </Col>
         <Col>
@@ -190,6 +208,7 @@ const CompraForm: React.FC<CompraFormProps> = ({ compraToEdit, onSave }) => {
               </Form.Control>
               <Button variant="link" onClick={() => navigate('/clientes')}>+</Button>
             </div>
+            {errors.idCliente && <Alert variant="danger">{errors.idCliente}</Alert>}
           </Form.Group>
         </Col>
       </Row>
@@ -202,11 +221,12 @@ const CompraForm: React.FC<CompraFormProps> = ({ compraToEdit, onSave }) => {
           value={formData.marcha}
           onChange={handleChange}
         />
+        {errors.marcha && <Alert variant="danger">{errors.marcha}</Alert>}
       </Form.Group>
 
-      <button type="submit" className="btn btn-submit">
+      <Button type="submit" variant="primary">
         {compraToEdit ? 'Actualizar Compra' : 'Crear Compra'}
-      </button>
+      </Button>
     </Form>
   );
 };

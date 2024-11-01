@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Row, Col } from 'react-bootstrap';
+import { Form, Row, Col, Alert } from 'react-bootstrap';
 
 interface Proveedor {
   id?: number;
@@ -25,6 +25,8 @@ const ProveedorForm: React.FC<ProveedorFormProps> = ({ proveedorToEdit, onSave }
     telefono: '',
   });
 
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
   useEffect(() => {
     if (proveedorToEdit) {
       setFormData({
@@ -40,11 +42,40 @@ const ProveedorForm: React.FC<ProveedorFormProps> = ({ proveedorToEdit, onSave }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+
+    if (name === 'telefono') {
+      // Solo permite dígitos y un máximo de 8 caracteres
+      if (/^\d*$/.test(value) && value.length <= 8) {
+        setFormData({ ...formData, [name]: value });
+        setErrors({ ...errors, telefono: '' });
+      } else if (value.length > 8) {
+        setErrors({ ...errors, telefono: 'El teléfono debe tener exactamente 8 dígitos' });
+      }
+    } else {
+      setFormData({ ...formData, [name]: value });
+      setErrors({ ...errors, [name]: '' });
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+    Object.keys(formData).forEach((field) => {
+      if (!formData[field as keyof Proveedor]) {
+        newErrors[field] = `El campo ${field} es requerido`;
+      }
+    });
+
+    if (formData.telefono && formData.telefono.length !== 8) {
+      newErrors.telefono = 'El teléfono debe tener exactamente 8 dígitos';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
+
     try {
       if (proveedorToEdit && proveedorToEdit.id) {
         await axios.put(`http://localhost:4000/api/proveedor/${proveedorToEdit.id}`, formData);
@@ -70,6 +101,7 @@ const ProveedorForm: React.FC<ProveedorFormProps> = ({ proveedorToEdit, onSave }
               placeholder="Nombre"
               onChange={handleChange}
             />
+            {errors.nombre && <Alert variant="danger">{errors.nombre}</Alert>}
           </Form.Group>
         </Col>
         <Col>
@@ -82,6 +114,7 @@ const ProveedorForm: React.FC<ProveedorFormProps> = ({ proveedorToEdit, onSave }
               placeholder="NIT"
               onChange={handleChange}
             />
+            {errors.nit && <Alert variant="danger">{errors.nit}</Alert>}
           </Form.Group>
         </Col>
       </Row>
@@ -97,6 +130,7 @@ const ProveedorForm: React.FC<ProveedorFormProps> = ({ proveedorToEdit, onSave }
               placeholder="DPI"
               onChange={handleChange}
             />
+            {errors.dpi && <Alert variant="danger">{errors.dpi}</Alert>}
           </Form.Group>
         </Col>
         <Col>
@@ -109,6 +143,7 @@ const ProveedorForm: React.FC<ProveedorFormProps> = ({ proveedorToEdit, onSave }
               placeholder="Razón Social"
               onChange={handleChange}
             />
+            {errors.razonSocial && <Alert variant="danger">{errors.razonSocial}</Alert>}
           </Form.Group>
         </Col>
       </Row>
@@ -124,6 +159,7 @@ const ProveedorForm: React.FC<ProveedorFormProps> = ({ proveedorToEdit, onSave }
               placeholder="Teléfono"
               onChange={handleChange}
             />
+            {errors.telefono && <Alert variant="danger">{errors.telefono}</Alert>}
           </Form.Group>
         </Col>
       </Row>

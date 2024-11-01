@@ -20,6 +20,8 @@ interface VehiculoListProps {
 const VehiculoList: React.FC<VehiculoListProps> = ({ onEdit, refresh }) => {
   const [vehiculos, setVehiculos] = useState<Vehiculo[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchVehiculos = async () => {
@@ -35,6 +37,16 @@ const VehiculoList: React.FC<VehiculoListProps> = ({ onEdit, refresh }) => {
 
     fetchVehiculos();
   }, [refresh]);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const totalPages = Math.ceil(vehiculos.length / itemsPerPage);
+  const currentVehiculos = vehiculos.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div className="container-custom">
@@ -53,8 +65,8 @@ const VehiculoList: React.FC<VehiculoListProps> = ({ onEdit, refresh }) => {
           </tr>
         </thead>
         <tbody>
-          {vehiculos.length > 0 ? (
-            vehiculos.map((vehiculo) => (
+          {currentVehiculos.length > 0 ? (
+            currentVehiculos.map((vehiculo) => (
               <tr key={vehiculo.id}>
                 <td>{vehiculo.id}</td>
                 <td>{vehiculo.marca}</td>
@@ -78,6 +90,17 @@ const VehiculoList: React.FC<VehiculoListProps> = ({ onEdit, refresh }) => {
           )}
         </tbody>
       </table>
+      <div className="pagination">
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index}
+            onClick={() => handlePageChange(index + 1)}
+            disabled={currentPage === index + 1}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

@@ -22,6 +22,8 @@ const ProveedorList: React.FC<ProveedorListProps> = ({ onEdit, onDelete, refresh
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     fetchProveedores();
@@ -42,6 +44,16 @@ const ProveedorList: React.FC<ProveedorListProps> = ({ onEdit, onDelete, refresh
       setLoading(false);
     }
   };
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const totalPages = Math.ceil(proveedores.length / itemsPerPage);
+  const currentProveedores = proveedores.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   if (loading) {
     return <div>Cargando proveedores...</div>;
@@ -67,8 +79,8 @@ const ProveedorList: React.FC<ProveedorListProps> = ({ onEdit, onDelete, refresh
           </tr>
         </thead>
         <tbody>
-          {proveedores.length > 0 ? (
-            proveedores.map(proveedor => (
+          {currentProveedores.length > 0 ? (
+            currentProveedores.map(proveedor => (
               <tr key={proveedor.id}>
                 <td>{proveedor.id}</td>
                 <td>{proveedor.nombre}</td>
@@ -97,6 +109,17 @@ const ProveedorList: React.FC<ProveedorListProps> = ({ onEdit, onDelete, refresh
           )}
         </tbody>
       </table>
+      <div className="pagination">
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index}
+            onClick={() => handlePageChange(index + 1)}
+            disabled={currentPage === index + 1}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

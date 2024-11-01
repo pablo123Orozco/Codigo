@@ -14,7 +14,7 @@
 }
 
 .btn-imprimir {
-    background-color: #28a745;
+    background-color: #65ae76;
     color: white;
     border: none;
     padding: 8px 12px;
@@ -27,5 +27,5 @@
 }
 
 .btn-imprimir:hover {
-    background-color: #218838;
+    background-color: #406b49;
 }

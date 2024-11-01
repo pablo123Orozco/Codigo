@@ -20,6 +20,8 @@ interface UserListProps {
 
 const UserList: React.FC<UserListProps> = ({ onEdit, onDelete, refresh }) => {
   const [users, setUsers] = useState<User[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     fetchUsers();
@@ -33,6 +35,16 @@ const UserList: React.FC<UserListProps> = ({ onEdit, onDelete, refresh }) => {
       console.error('Error al obtener usuarios:', error);
     }
   };
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const totalPages = Math.ceil(users.length / itemsPerPage);
+  const currentUsers = users.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div className="container-custom">
@@ -50,7 +62,7 @@ const UserList: React.FC<UserListProps> = ({ onEdit, onDelete, refresh }) => {
           </tr>
         </thead>
         <tbody>
-          {users.map(user => (
+          {currentUsers.map(user => (
             <tr key={user.id}>
               <td>{user.id}</td>
               <td>{user.nombre}</td>
@@ -74,6 +86,17 @@ const UserList: React.FC<UserListProps> = ({ onEdit, onDelete, refresh }) => {
           ))}
         </tbody>
       </table>
+      <div className="pagination">
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index}
+            onClick={() => handlePageChange(index + 1)}
+            disabled={currentPage === index + 1}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

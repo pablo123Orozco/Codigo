@@ -23,6 +23,8 @@ const ClienteList: React.FC<ClienteListProps> = ({ onEdit, onDelete, refresh }) 
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     fetchClientes();
@@ -43,6 +45,16 @@ const ClienteList: React.FC<ClienteListProps> = ({ onEdit, onDelete, refresh }) 
       setLoading(false);
     }
   };
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const totalPages = Math.ceil(clientes.length / itemsPerPage);
+  const currentClientes = clientes.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   if (loading) {
     return <div>Cargando clientes...</div>;
@@ -69,8 +81,8 @@ const ClienteList: React.FC<ClienteListProps> = ({ onEdit, onDelete, refresh }) 
           </tr>
         </thead>
         <tbody>
-          {clientes.length > 0 ? (
-            clientes.map(cliente => (
+          {currentClientes.length > 0 ? (
+            currentClientes.map(cliente => (
               <tr key={cliente.id}>
                 <td>{cliente.id}</td>
                 <td>{cliente.nombre}</td>
@@ -100,6 +112,17 @@ const ClienteList: React.FC<ClienteListProps> = ({ onEdit, onDelete, refresh }) 
           )}
         </tbody>
       </table>
+      <div className="pagination">
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index}
+            onClick={() => handlePageChange(index + 1)}
+            disabled={currentPage === index + 1}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

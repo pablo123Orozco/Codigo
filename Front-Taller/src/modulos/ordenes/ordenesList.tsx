@@ -50,6 +50,8 @@ interface OrdenListProps {
 const OrdenList: React.FC<OrdenListProps> = ({ onEdit, onDelete, refresh }) => {
   const [ordenes, setOrdenes] = useState<Orden[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     fetchOrdenes();
@@ -90,6 +92,16 @@ const OrdenList: React.FC<OrdenListProps> = ({ onEdit, onDelete, refresh }) => {
     }
   };
 
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const totalPages = Math.ceil(ordenes.length / itemsPerPage);
+  const currentOrdenes = ordenes.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
     <div>
       <h2>Lista de Órdenes de Servicio</h2>
@@ -105,8 +117,8 @@ const OrdenList: React.FC<OrdenListProps> = ({ onEdit, onDelete, refresh }) => {
           </tr>
         </thead>
         <tbody>
-          {Array.isArray(ordenes) && ordenes.length > 0 ? (
-            ordenes.map((orden) => (
+          {currentOrdenes.length > 0 ? (
+            currentOrdenes.map((orden) => (
               <tr key={orden.id}>
                 <td>{orden.nombreCliente}</td>
                 <td>{orden.marca} ({orden.placa})</td>
@@ -128,11 +140,22 @@ const OrdenList: React.FC<OrdenListProps> = ({ onEdit, onDelete, refresh }) => {
             ))
           ) : (
             <tr>
-              <td colSpan={6}>No hay órdenes disponibles</td>
+              <td colSpan={5}>No hay órdenes disponibles</td>
             </tr>
           )}
         </tbody>
       </table>
+      <div className="pagination">
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index}
+            onClick={() => handlePageChange(index + 1)}
+            disabled={currentPage === index + 1}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

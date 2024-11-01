@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Button, Col, Row } from 'react-bootstrap';
+import { Form, Button, Col, Row, Alert } from 'react-bootstrap';
 
 interface Servicio {
   id?: number;
@@ -25,6 +25,8 @@ const ServicioForm: React.FC<ServicioFormProps> = ({ servicioToEdit, onSave }) =
     descripcion: '',
   });
 
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
   useEffect(() => {
     if (servicioToEdit) {
       setFormData(servicioToEdit);
@@ -37,7 +39,7 @@ const ServicioForm: React.FC<ServicioFormProps> = ({ servicioToEdit, onSave }) =
     setFormData((prevData) => ({ ...prevData, precio_total: costoManoObra + precioRepuesto }));
   }, [formData.costo_mano_obra, formData.precio_repuesto]);
 
-  const handleChange = (e: React.ChangeEvent<any>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
     if (type === 'number') {
       const parsedValue = parseFloat(value);
@@ -48,10 +50,23 @@ const ServicioForm: React.FC<ServicioFormProps> = ({ servicioToEdit, onSave }) =
     } else {
       setFormData({ ...formData, [name]: value });
     }
+    setErrors({ ...errors, [name]: '' }); // Limpia el error al editar un campo
+  };
+
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+    Object.keys(formData).forEach((field) => {
+      if (formData[field as keyof Servicio] === '' || formData[field as keyof Servicio] === 0) {
+        newErrors[field] = `El campo ${field} es requerido`;
+      }
+    });
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
 
     try {
       if (servicioToEdit) {
@@ -77,8 +92,8 @@ const ServicioForm: React.FC<ServicioFormProps> = ({ servicioToEdit, onSave }) =
               placeholder="Ingrese el nombre del servicio"
               value={formData.servicio}
               onChange={handleChange}
-              required
             />
+            {errors.servicio && <Alert variant="danger">{errors.servicio}</Alert>}
           </Form.Group>
         </Col>
       </Row>
@@ -92,8 +107,8 @@ const ServicioForm: React.FC<ServicioFormProps> = ({ servicioToEdit, onSave }) =
               placeholder="Ingrese el costo de mano de obra"
               value={formData.costo_mano_obra || ''}
               onChange={handleChange}
-              required
             />
+            {errors.costo_mano_obra && <Alert variant="danger">{errors.costo_mano_obra}</Alert>}
           </Form.Group>
         </Col>
         <Col>
@@ -105,8 +120,8 @@ const ServicioForm: React.FC<ServicioFormProps> = ({ servicioToEdit, onSave }) =
               placeholder="Ingrese el precio de los repuestos"
               value={formData.precio_repuesto || ''}
               onChange={handleChange}
-              required
             />
+            {errors.precio_repuesto && <Alert variant="danger">{errors.precio_repuesto}</Alert>}
           </Form.Group>
         </Col>
       </Row>
@@ -134,8 +149,8 @@ const ServicioForm: React.FC<ServicioFormProps> = ({ servicioToEdit, onSave }) =
               placeholder="Descripción del servicio"
               value={formData.descripcion}
               onChange={handleChange}
-              required
             />
+            {errors.descripcion && <Alert variant="danger">{errors.descripcion}</Alert>}
           </Form.Group>
         </Col>
       </Row>

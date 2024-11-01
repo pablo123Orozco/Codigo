@@ -110,6 +110,34 @@ module.exports = function (dbinyectada) {
         });
     }
 
+    async function obtenerSugerenciasClientes(query) {
+        const sql = 'SELECT nombre FROM clientes WHERE nombre LIKE ?';
+        const values = [`${query}%`];
+    
+        try {
+            // Ejecutar la consulta para obtener los nombres de clientes que coinciden
+            const resultados = await new Promise((resolve, reject) => {
+                db.conexion.query(sql, values, (error, results) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(results);
+                });
+            });
+    
+            // Asegúrate de que `resultados` sea un array antes de iterar
+            if (!Array.isArray(resultados)) {
+                throw new Error("La respuesta de la base de datos no es un array");
+            }
+    
+            // Devuelve solo los nombres de clientes en un array simple
+            return resultados.map(row => row.nombre);
+        } catch (error) {
+            console.error('Error en obtenerSugerenciasClientes:', error);
+            throw error;
+        }
+    }
+
     return {
         todos,
         uno,
@@ -117,6 +145,7 @@ module.exports = function (dbinyectada) {
         actualizar,
         eliminar,
         historialComprasPorCliente,
-        comprasPorMes
+        comprasPorMes,
+        obtenerSugerenciasClientes
     };
 };

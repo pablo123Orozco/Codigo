@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Row, Col, Button } from 'react-bootstrap';
+import { Form, Row, Col, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
 interface Orden {
@@ -47,7 +47,6 @@ interface OrdenFormProps {
   setShowSuccessModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-
 const OrdenForm: React.FC<OrdenFormProps> = ({ ordenToEdit, onSave, setShowSuccessModal }) => {
   const [formData, setFormData] = useState<Orden>({
     detalleReparacion: '',
@@ -65,6 +64,7 @@ const OrdenForm: React.FC<OrdenFormProps> = ({ ordenToEdit, onSave, setShowSucce
     fechaIngreso: '',
   });
 
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [vehiculos, setVehiculos] = useState<Vehiculo[]>([]);
   const [mecanicos, setMecanicos] = useState<Mecanico[]>([]);
@@ -77,10 +77,7 @@ const OrdenForm: React.FC<OrdenFormProps> = ({ ordenToEdit, onSave, setShowSucce
       const fechaFormateada = ordenToEdit.fechaIngreso
         ? new Date(ordenToEdit.fechaIngreso).toISOString().split("T")[0]
         : '';
-      setFormData({
-        ...ordenToEdit,
-        fechaIngreso: fechaFormateada,
-      });
+      setFormData({ ...ordenToEdit, fechaIngreso: fechaFormateada });
     }
 
     const fetchClientes = async () => {
@@ -131,10 +128,24 @@ const OrdenForm: React.FC<OrdenFormProps> = ({ ordenToEdit, onSave, setShowSucce
       ...formData,
       [name]: name === "costoEstimado" || name === "adelantoEmpresa" ? parseFloat(value) || 0 : value,
     });
+    setErrors({ ...errors, [name]: '' });
+  };
+
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+    Object.keys(formData).forEach((field) => {
+      if (!formData[field as keyof Orden] && formData[field as keyof Orden] !== 0) {
+        newErrors[field] = `El campo ${field} es requerido`;
+      }
+    });
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
+
     try {
       if (formData.id) {
         await axios.put(`http://localhost:4000/api/ordenes/${formData.id}`, formData);
@@ -160,6 +171,7 @@ const OrdenForm: React.FC<OrdenFormProps> = ({ ordenToEdit, onSave, setShowSucce
               value={formData.detalleReparacion || ''}
               onChange={handleChange}
             />
+            {errors.detalleReparacion && <Alert variant="danger">{errors.detalleReparacion}</Alert>}
           </Form.Group>
         </Col>
         <Col>
@@ -171,6 +183,7 @@ const OrdenForm: React.FC<OrdenFormProps> = ({ ordenToEdit, onSave, setShowSucce
               value={formData.fechaIngreso || ''}
               onChange={handleChange}
             />
+            {errors.fechaIngreso && <Alert variant="danger">{errors.fechaIngreso}</Alert>}
           </Form.Group>
         </Col>
       </Row>
@@ -192,6 +205,7 @@ const OrdenForm: React.FC<OrdenFormProps> = ({ ordenToEdit, onSave, setShowSucce
                 </option>
               ))}
             </Form.Control>
+            {errors.idVehiculo && <Alert variant="danger">{errors.idVehiculo}</Alert>}
           </Form.Group>
         </Col>
         <Col>
@@ -210,6 +224,7 @@ const OrdenForm: React.FC<OrdenFormProps> = ({ ordenToEdit, onSave, setShowSucce
                 </option>
               ))}
             </Form.Control>
+            {errors.idCliente && <Alert variant="danger">{errors.idCliente}</Alert>}
           </Form.Group>
         </Col>
       </Row>
@@ -231,6 +246,7 @@ const OrdenForm: React.FC<OrdenFormProps> = ({ ordenToEdit, onSave, setShowSucce
                 </option>
               ))}
             </Form.Control>
+            {errors.idMecanico && <Alert variant="danger">{errors.idMecanico}</Alert>}
           </Form.Group>
         </Col>
         <Col>
@@ -249,6 +265,7 @@ const OrdenForm: React.FC<OrdenFormProps> = ({ ordenToEdit, onSave, setShowSucce
                 </option>
               ))}
             </Form.Control>
+            {errors.idServicio && <Alert variant="danger">{errors.idServicio}</Alert>}
           </Form.Group>
         </Col>
       </Row>
@@ -263,17 +280,24 @@ const OrdenForm: React.FC<OrdenFormProps> = ({ ordenToEdit, onSave, setShowSucce
               value={formData.concepto || ''}
               onChange={handleChange}
             />
+            {errors.concepto && <Alert variant="danger">{errors.concepto}</Alert>}
           </Form.Group>
         </Col>
         <Col>
           <Form.Group controlId="combustible">
             <Form.Label>Combustible</Form.Label>
             <Form.Control
-              type="text"
+              as="select"
               name="combustible"
               value={formData.combustible || ''}
               onChange={handleChange}
-            />
+            >
+              <option value="">Seleccionar Nivel de Combustible</option>
+              <option value="Bajo">Bajo</option>
+              <option value="Medio">Medio</option>
+              <option value="Lleno">Lleno</option>
+            </Form.Control>
+            {errors.combustible && <Alert variant="danger">{errors.combustible}</Alert>}
           </Form.Group>
         </Col>
       </Row>
@@ -288,6 +312,7 @@ const OrdenForm: React.FC<OrdenFormProps> = ({ ordenToEdit, onSave, setShowSucce
               value={formData.costoEstimado || ''}
               onChange={handleChange}
             />
+            {errors.costoEstimado && <Alert variant="danger">{errors.costoEstimado}</Alert>}
           </Form.Group>
         </Col>
         <Col>
@@ -299,6 +324,7 @@ const OrdenForm: React.FC<OrdenFormProps> = ({ ordenToEdit, onSave, setShowSucce
               value={formData.adelantoEmpresa || ''}
               onChange={handleChange}
             />
+            {errors.adelantoEmpresa && <Alert variant="danger">{errors.adelantoEmpresa}</Alert>}
           </Form.Group>
         </Col>
       </Row>
@@ -308,11 +334,17 @@ const OrdenForm: React.FC<OrdenFormProps> = ({ ordenToEdit, onSave, setShowSucce
           <Form.Group controlId="tipoPago">
             <Form.Label>Tipo de Pago</Form.Label>
             <Form.Control
-              type="text"
+              as="select"
               name="tipoPago"
               value={formData.tipoPago || ''}
               onChange={handleChange}
-            />
+            >
+              <option value="">Seleccionar Tipo de Pago</option>
+              <option value="Efectivo">Efectivo</option>
+              <option value="Cheque">Cheque</option>
+              <option value="Transferencia">Transferencia</option>
+            </Form.Control>
+            {errors.tipoPago && <Alert variant="danger">{errors.tipoPago}</Alert>}
           </Form.Group>
         </Col>
         <Col>
@@ -324,6 +356,7 @@ const OrdenForm: React.FC<OrdenFormProps> = ({ ordenToEdit, onSave, setShowSucce
               value={formData.estadoPago || ''}
               onChange={handleChange}
             />
+            {errors.estadoPago && <Alert variant="danger">{errors.estadoPago}</Alert>}
           </Form.Group>
         </Col>
         <Col>
@@ -335,6 +368,7 @@ const OrdenForm: React.FC<OrdenFormProps> = ({ ordenToEdit, onSave, setShowSucce
               value={formData.estado || ''}
               onChange={handleChange}
             />
+            {errors.estado && <Alert variant="danger">{errors.estado}</Alert>}
           </Form.Group>
         </Col>
       </Row>

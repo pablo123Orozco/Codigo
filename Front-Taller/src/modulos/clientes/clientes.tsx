@@ -111,7 +111,7 @@ const ClienteModule: React.FC = () => {
               <Modal.Title>{clienteToEdit ? 'Editar Cliente' : 'Agregar Cliente'}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <ClienteForm clienteToEdit={clienteToEdit} onSave={handleSave} />
+              <ClienteForm clienteToEdit={clienteToEdit} onSave={handleSave} setShowSuccessModal={setShowSuccessModal} />
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={handleCloseModal}>

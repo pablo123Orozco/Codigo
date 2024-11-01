@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Row, Col } from 'react-bootstrap';
+import { Form, Row, Col, Button, Alert } from 'react-bootstrap';
 
 interface Mecanico {
   mecanicoId?: number;
@@ -19,6 +19,8 @@ const MecanicoForm: React.FC<MecanicoFormProps> = ({ mecanicoToEdit, onSave }) =
     fecha: '',
   });
 
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
   useEffect(() => {
     if (mecanicoToEdit) {
       const formattedDate = mecanicoToEdit.fecha.split('T')[0]; // Extrae solo la fecha en formato YYYY-MM-DD
@@ -33,10 +35,24 @@ const MecanicoForm: React.FC<MecanicoFormProps> = ({ mecanicoToEdit, onSave }) =
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    setErrors({ ...errors, [name]: '' }); // Limpia el error al editar el campo
+  };
+
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+    Object.keys(formData).forEach((field) => {
+      if (formData[field as keyof Mecanico] === '') {
+        newErrors[field] = `El campo ${field} es requerido`;
+      }
+    });
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
+
     try {
       if (mecanicoToEdit && mecanicoToEdit.mecanicoId) {
         await axios.put(`http://localhost:4000/api/mecanico/${mecanicoToEdit.mecanicoId}`, formData);
@@ -62,6 +78,7 @@ const MecanicoForm: React.FC<MecanicoFormProps> = ({ mecanicoToEdit, onSave }) =
               placeholder="Nombre"
               onChange={handleChange}
             />
+            {errors.nombre && <Alert variant="danger">{errors.nombre}</Alert>}
           </Form.Group>
         </Col>
         <Col>
@@ -73,13 +90,14 @@ const MecanicoForm: React.FC<MecanicoFormProps> = ({ mecanicoToEdit, onSave }) =
               value={formData.fecha}
               onChange={handleChange}
             />
+            {errors.fecha && <Alert variant="danger">{errors.fecha}</Alert>}
           </Form.Group>
         </Col>
       </Row>
 
-      <button type="submit" className="btn btn-submit">
+      <Button type="submit" className="btn btn-submit">
         {mecanicoToEdit ? 'Actualizar' : 'Agregar'}
-      </button>
+      </Button>
     </Form>
   );
 };

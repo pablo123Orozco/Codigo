@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Row, Col, Button } from 'react-bootstrap';
+import { Form, Row, Col, Button, Alert } from 'react-bootstrap';
 
 interface User {
   id?: number;
@@ -26,6 +26,7 @@ const UserForm: React.FC<UserFormProps> = ({ userToEdit, onSave }) => {
     estado: true,
     rol: 'usuario',
   });
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     if (userToEdit) {
@@ -47,10 +48,23 @@ const UserForm: React.FC<UserFormProps> = ({ userToEdit, onSave }) => {
       ...formData,
       [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
     });
+    setErrors({ ...errors, [name]: '' });
+  };
+
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+    Object.keys(formData).forEach((field) => {
+      if (!formData[field as keyof User]) {
+        newErrors[field] = `El campo ${field} es requerido`;
+      }
+    });
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
 
     try {
       if (userToEdit) {
@@ -81,6 +95,7 @@ const UserForm: React.FC<UserFormProps> = ({ userToEdit, onSave }) => {
                 placeholder="Nombre"
                 onChange={handleChange}
               />
+              {errors.nombre && <Alert variant="danger">{errors.nombre}</Alert>}
             </Form.Group>
           </Col>
           <Col md={6}>
@@ -93,6 +108,7 @@ const UserForm: React.FC<UserFormProps> = ({ userToEdit, onSave }) => {
                 placeholder="Apellido"
                 onChange={handleChange}
               />
+              {errors.apellido && <Alert variant="danger">{errors.apellido}</Alert>}
             </Form.Group>
           </Col>
         </Row>
@@ -108,6 +124,7 @@ const UserForm: React.FC<UserFormProps> = ({ userToEdit, onSave }) => {
                 placeholder="Nombre de Usuario"
                 onChange={handleChange}
               />
+              {errors.nombreUsuario && <Alert variant="danger">{errors.nombreUsuario}</Alert>}
             </Form.Group>
           </Col>
           <Col md={6}>
@@ -120,6 +137,7 @@ const UserForm: React.FC<UserFormProps> = ({ userToEdit, onSave }) => {
                 placeholder="Contraseña"
                 onChange={handleChange}
               />
+              {errors.contraseña && <Alert variant="danger">{errors.contraseña}</Alert>}
             </Form.Group>
           </Col>
         </Row>
@@ -132,6 +150,7 @@ const UserForm: React.FC<UserFormProps> = ({ userToEdit, onSave }) => {
                 <option value="usuario">Usuario</option>
                 <option value="admin">Admin</option>
               </Form.Control>
+              {errors.rol && <Alert variant="danger">{errors.rol}</Alert>}
             </Form.Group>
           </Col>
           <Col md={6}>
@@ -143,6 +162,7 @@ const UserForm: React.FC<UserFormProps> = ({ userToEdit, onSave }) => {
                 checked={formData.estado}
                 onChange={handleChange}
               />
+              {errors.estado && <Alert variant="danger">{errors.estado}</Alert>}
             </Form.Group>
           </Col>
         </Row>

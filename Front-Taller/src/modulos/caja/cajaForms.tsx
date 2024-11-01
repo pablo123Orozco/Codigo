@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Row, Col, Button } from 'react-bootstrap';
+import { Form, Row, Col, Button, Alert } from 'react-bootstrap';
 
 interface Caja {
   id?: number;
   concepto: string;
-  monto: number;
+  monto: number | null;
   tipo: string;
   fecha: string;  
 }
@@ -19,10 +19,12 @@ interface CajaFormProps {
 const CajaForm: React.FC<CajaFormProps> = ({ cajaToEdit, onSave, setShowSuccessModal }) => {
   const [formData, setFormData] = useState<Caja>({
     concepto: '',
-    monto: 0,
+    monto: null,
     tipo: '',
     fecha: '',
   });
+
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     if (cajaToEdit) {
@@ -34,12 +36,29 @@ const CajaForm: React.FC<CajaFormProps> = ({ cajaToEdit, onSave, setShowSuccessM
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: name === 'monto' ? parseFloat(value) : value,
+      [name]: name === 'monto' ? (value === '' ? null : parseFloat(value)) : value,
     });
+    setErrors({ ...errors, [name]: '' }); // Limpia el error al editar el campo
+  };
+
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+    Object.keys(formData).forEach((field) => {
+      if (
+        formData[field as keyof Caja] === '' ||
+        (field === 'monto' && (formData.monto === null || formData.monto <= 0))
+      ) {
+        newErrors[field] = `El campo ${field} es requerido`;
+      }
+    });
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
+
     try {
       if (cajaToEdit?.id) {
         await axios.put(`http://localhost:4000/api/caja/${cajaToEdit.id}`, formData);
@@ -65,6 +84,7 @@ const CajaForm: React.FC<CajaFormProps> = ({ cajaToEdit, onSave, setShowSuccessM
               value={formData.concepto}
               onChange={handleChange}
             />
+            {errors.concepto && <Alert variant="danger">{errors.concepto}</Alert>}
           </Form.Group>
         </Col>
         <Col>
@@ -73,9 +93,11 @@ const CajaForm: React.FC<CajaFormProps> = ({ cajaToEdit, onSave, setShowSuccessM
             <Form.Control
               type="number"
               name="monto"
-              value={formData.monto}
+              value={formData.monto !== null ? formData.monto : ''} // Asegura que no esté vacío al editar
               onChange={handleChange}
+              placeholder="Ingrese el monto" // Placeholder para mayor claridad
             />
+            {errors.monto && <Alert variant="danger">{errors.monto}</Alert>}
           </Form.Group>
         </Col>
       </Row>
@@ -94,6 +116,7 @@ const CajaForm: React.FC<CajaFormProps> = ({ cajaToEdit, onSave, setShowSuccessM
               <option value="Ingreso">Ingreso</option>
               <option value="Egreso">Egreso</option>
             </Form.Control>
+            {errors.tipo && <Alert variant="danger">{errors.tipo}</Alert>}
           </Form.Group>
         </Col>
         <Col>
@@ -105,6 +128,7 @@ const CajaForm: React.FC<CajaFormProps> = ({ cajaToEdit, onSave, setShowSuccessM
               value={formData.fecha}
               onChange={handleChange}
             />
+            {errors.fecha && <Alert variant="danger">{errors.fecha}</Alert>}
           </Form.Group>
         </Col>
       </Row>
@@ -117,4 +141,3 @@ const CajaForm: React.FC<CajaFormProps> = ({ cajaToEdit, onSave, setShowSuccessM
 };
 
 export default CajaForm;
- 
