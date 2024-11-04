@@ -106,7 +106,7 @@ const CompraList: React.FC<CompraListProps> = ({ onEdit, onDelete, refresh }) =>
             <th>Estado</th>
             <th>Proveedor</th>
             <th>Cliente</th>
-            <th>Marcha</th>
+            <th>Marca</th>
             <th>Acciones</th>
           </tr>
         </thead>

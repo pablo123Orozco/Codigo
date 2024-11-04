@@ -5,25 +5,31 @@ const autenticacion = require('../autenticacion');
 module.exports = function(dbinyectada) {
     
     let db = dbinyectada;
-    if (!db){
+    if (!db) {
         db = require('../../src/DB/mysql');
     }
 
     async function login(usuario, contraseña) {
         try {
-            
             console.log(`Buscando usuario: ${usuario}`);
+            
+            // Consulta a la base de datos para obtener la información del usuario
             const data = await db.query(TABLA, { usuario: usuario });
             console.log('Datos del usuario encontrado:', data);
 
+            // Verifica si se encontró el usuario y tiene una contraseña
             if (!data || !data.contraseña) {
                 throw new Error('Información inválida');
             }
 
-            
+            // Compara la contraseña ingresada con la almacenada en la base de datos
             const resultado = await bcrypt.compare(contraseña, data.contraseña);
             if (resultado === true) {
-                return autenticacion.asignarToken({ ...data });
+                // Genera el token JWT e incluye los datos del usuario
+                const token = autenticacion.asignarToken({ id: data.id, usuario: data.usuario });
+
+                // Retorna el token y el rol del usuario
+                return { token, rol: data.rol };
             } else {
                 throw new Error('Información inválida');
             }
@@ -37,9 +43,8 @@ module.exports = function(dbinyectada) {
         console.log(data);
         const authData = {};
 
-       
         if (data.id !== undefined && data.id !== null) {
-            authData.id = data.id;  
+            authData.id = data.id;
         } else {
             throw new Error('ID no puede ser null o undefined');
         }
@@ -52,7 +57,7 @@ module.exports = function(dbinyectada) {
             authData.contraseña = await bcrypt.hash(data.contraseña.toString(), 2);
         }
 
-        return db.agregar(TABLA, authData);  // Insertar el registro en la tabla auth
+        return db.agregar(TABLA, authData); // Insertar el registro en la tabla auth
     }
 
     return {

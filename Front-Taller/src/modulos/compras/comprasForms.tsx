@@ -214,7 +214,7 @@ const CompraForm: React.FC<CompraFormProps> = ({ compraToEdit, onSave }) => {
       </Row>
 
       <Form.Group controlId="marcha">
-        <Form.Label>Marcha</Form.Label>
+        <Form.Label>Marca</Form.Label>
         <Form.Control
           type="text"
           name="marcha"

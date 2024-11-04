@@ -31,14 +31,24 @@ const ServiciosMasSolicitadosChart: React.FC = () => {
     fetchServiciosMasSolicitados();
   }, []);
 
+  // Definir una paleta de colores
+  const backgroundColors = [
+    '#2b5a8a', // Rojo claro
+    '#708090', // Azul claro
+    '#708090', // Amarillo claro
+    '#808000', // Turquesa
+    '#00008B', // Violeta
+    '#008B8B', // Naranja claro
+  ];
+
   const chartData = {
     labels: labels,
     datasets: [
       {
         label: 'Cantidad de Servicios',
         data: data,
-        backgroundColor: 'rgba(75, 192, 192, 0.6)',
-        borderColor: 'rgba(75, 192, 192, 1)',
+        backgroundColor: backgroundColors, // Aplica la paleta de colores
+        borderColor: backgroundColors.map(color => color), // Borde del mismo color que el fondo
         borderWidth: 1,
       },
     ],
@@ -54,11 +64,37 @@ const ServiciosMasSolicitadosChart: React.FC = () => {
         display: true,
         text: 'Servicios Más Solicitados',
       },
+      tooltip: {
+        callbacks: {
+          label: function (context: any) {
+            return `${context.label}: ${context.raw}`;
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        ticks: {
+          maxRotation: 90, // Rotación completa para etiquetas verticales
+          minRotation: 90,
+          font: {
+            size: 10, // Tamaño de fuente más pequeño para mayor claridad
+          },
+          callback: function(value: any, index: number, values: any) {
+            // Recorta el texto si es demasiado largo
+            const label = labels[value] || '';
+            return label.length > 10 ? label.substr(0, 10) + '...' : label;
+          },
+        },
+      },
+      y: {
+        beginAtZero: true,
+      },
     },
   };
 
   return (
-    <div>
+    <div style={{ width: '96%', height: '317px', margin: '0 auto' }}>
       <Bar data={chartData} options={options} />
     </div>
   );

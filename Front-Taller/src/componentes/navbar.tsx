@@ -41,6 +41,8 @@ const CustomNavbar: React.FC<NavbarProps> = ({ isSidebarOpen }) => {
             <Dropdown.Menu className="custom-dropdown-menu">
               <Dropdown.Divider />
               <Dropdown.Item onClick={handleLogout}>Cerrar Sesión</Dropdown.Item>
+              <Dropdown.Divider />
+              <Dropdown.Item onClick={handleLogout}>Ayuda</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
         </Nav>

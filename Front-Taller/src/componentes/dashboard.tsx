@@ -1,3 +1,4 @@
+// Dashboard.js
 import React, { useState, useEffect } from 'react';
 import Navbar from './navbar';
 import Sidebar from './Sidebar';
@@ -12,6 +13,8 @@ const Dashboard: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const [ordenesCount, setOrdenesCount] = useState<number>(0);
   const [vehiculosCount, setVehiculosCount] = useState<number>(0);
+  const [serviciosData, setServiciosData] = useState<number[]>([]);
+  const [serviciosLabels, setServiciosLabels] = useState<string[]>([]);
 
   const toggleSidebar = (isOpen: boolean): void => {
     setIsSidebarOpen(isOpen);
@@ -26,6 +29,13 @@ const Dashboard: React.FC = () => {
       const vehiculosResponse = await axios.get('http://localhost:4000/api/vehiculos');
       const vehiculos = vehiculosResponse.data.body;
       setVehiculosCount(vehiculos.length);
+
+      // Simulación de datos para "Servicios Más Solicitados"
+      const serviciosResponse = await axios.get('http://localhost:4000/api/servicios'); // Ajusta la URL de acuerdo a tu API
+      const servicios = serviciosResponse.data.body;
+      setServiciosData(servicios.map(servicio => servicio.cantidad));
+      setServiciosLabels(servicios.map(servicio => servicio.nombre));
+
     } catch (error) {
       console.error('Error al obtener los datos:', error);
     }
@@ -77,7 +87,7 @@ const Dashboard: React.FC = () => {
                 <Card className="mb-4 shadow-sm">
                   <Card.Body>
                     <Card.Title>Servicios Más Solicitados</Card.Title>
-                    <ServiciosMasSolicitadosChart />
+                    <ServiciosMasSolicitadosChart data={serviciosData} labels={serviciosLabels} />
                   </Card.Body>
                 </Card>
               </Col>

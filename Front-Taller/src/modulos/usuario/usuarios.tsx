@@ -107,7 +107,7 @@ const UserModule: React.FC = () => {
       <div className={`dashboard-container${isSidebarOpen ? ' dashboard-container--shift' : ''}`}>
         <Sidebar toggleSidebar={toggleSidebar} />
         <div className="content">
-          <h1>Módulo de Usuarios</h1>
+          <h1>Usuarios</h1>
           <Button variant="primary" onClick={() => setShowModal(true)}>
             Agregar Usuario
           </Button>

@@ -34,14 +34,22 @@ const OrdenesPorEstadoChart: React.FC = () => {
       const labels = data.map((estado: any) => estado.estado);
       const counts = data.map((estado: any) => estado.cantidad);
 
+      // Definir colores basados en el estado usando códigos hexadecimales
+      const backgroundColors = data.map((estado: any) => {
+        if (estado.estado === 'Completado') return '#008000'; // Verde
+        if (estado.estado === 'Pendiente') return '#FF0000'; // Rojo
+        if (estado.estado === 'aprobado') return '#FFFF00'; // Amarillo
+        return '#4BC0C0'; // Color por defecto (En Progreso)
+      });
+
       setChartData({
         labels,
         datasets: [
           {
             label: 'Órdenes por Estado',
             data: counts,
-            backgroundColor: 'rgba(75, 192, 192, 0.6)',
-            borderColor: 'rgba(75, 192, 192, 1)',
+            backgroundColor: backgroundColors,
+            borderColor: backgroundColors, // Usar el mismo color de fondo para el borde
             borderWidth: 1,
           },
         ],
@@ -56,11 +64,12 @@ const OrdenesPorEstadoChart: React.FC = () => {
   }, []);
 
   return (
-    <div>
+    <div style={{ width: '96%', height: '317px', margin: '0 auto' }}>
       <Bar
         data={chartData}
         options={{
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
             legend: {
               position: 'top' as const,
@@ -72,7 +81,7 @@ const OrdenesPorEstadoChart: React.FC = () => {
           },
           scales: {
             x: {
-              type: 'category', // Especifica la escala de categorías
+              type: 'category',
               title: {
                 display: true,
                 text: 'Estado',

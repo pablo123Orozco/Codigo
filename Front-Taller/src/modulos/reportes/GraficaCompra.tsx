@@ -1,4 +1,5 @@
 // src/modulos/reportes/ComprasPorMesChart.tsx
+
 import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import axios from 'axios';
@@ -13,6 +14,22 @@ interface ComprasPorMesData {
 const mesesNombres = [
   "enero", "febrero", "marzo", "abril", "mayo", "junio",
   "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+];
+
+// Paleta de colores para cada mes
+const mesColors = [
+  '#FF6384', // Enero - Rojo claro
+  '#36A2EB', // Febrero - Azul claro
+  '#FFCE56', // Marzo - Amarillo claro
+  '#4BC0C0', // Abril - Turquesa
+  '#9966FF', // Mayo - Violeta
+  '#FF9F40', // Junio - Naranja claro
+  '#FF6384', // Julio - Rojo claro
+  '#36A2EB', // Agosto - Azul claro
+  '#FFCE56', // Septiembre - Amarillo claro
+  '#BDB76B', // Octubre - Turquesa
+  '#A9A9A9', // Noviembre - Violeta
+  '#FF9F40'  // Diciembre - Naranja claro
 ];
 
 const ComprasPorMesChart: React.FC = () => {
@@ -49,8 +66,8 @@ const ComprasPorMesChart: React.FC = () => {
       {
         label: 'Compras por Mes',
         data: comprasData.map((item) => item.cantidad),
-        backgroundColor: 'rgba(75, 192, 192, 0.6)',
-        borderColor: 'rgba(75, 192, 192, 1)',
+        backgroundColor: mesColors, // Aplicar la paleta de colores
+        borderColor: mesColors, // Borde del mismo color que el fondo
         borderWidth: 1,
       },
     ],

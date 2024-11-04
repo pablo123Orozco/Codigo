@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faBars, faTimes, faCogs, faUser, faTable, faList, 
   faCar, faClipboard, faShoppingCart, faHome, faToolbox, 
-  faBriefcase, faCashRegister, faAngleDown, faAngleUp, faWrench 
+  faBriefcase,  faAngleDown, faAngleUp, faWrench 
 } from '@fortawesome/free-solid-svg-icons';
 import './sidebar.css';
 
@@ -114,12 +114,7 @@ const Sidebar: React.FC<SidebarProps> = ({ toggleSidebar }) => {
                 <span className="link-text">Compras</span>
               </Link>
             </div>
-            <div className="sidebar-position mb-3">
-              <FontAwesomeIcon icon={faCashRegister} className="me-2" />
-              <Link to="/caja" className="text-decoration-none">
-                <span className="link-text">Caja</span>
-              </Link>
-            </div>
+            
             <div className="sidebar-position mb-3">
               <FontAwesomeIcon icon={faWrench} className="me-2" />
               <Link to="/mecanico" className="text-decoration-none">

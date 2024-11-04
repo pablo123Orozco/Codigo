@@ -90,7 +90,7 @@ const OrdenesModule: React.FC = () => {
       <div className={`dashboard-container${isSidebarOpen ? ' dashboard-container--shift' : ''}`}>
         <Sidebar toggleSidebar={toggleSidebar} />
         <div className="content">
-          <h1>Módulo de Órdenes de Servicio</h1>
+          <h1>Órdenes de Servicio</h1>
           <Button variant="primary" onClick={() => setShowModal(true)}>
             Agregar Orden
           </Button>

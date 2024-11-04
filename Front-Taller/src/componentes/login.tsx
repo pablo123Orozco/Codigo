@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Form, Button, Alert } from "react-bootstrap";
+import { Form, Button, Alert, InputGroup } from "react-bootstrap";
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // Importamos los iconos de ojo
 import "./login.css"; // Importamos el archivo CSS para el estilo
 
 import BackgroundImage from "../assets/Imagenes/background.png";
-import Logo from "../assets/Imagenes/login.png";
+import Logo from "../assets/Imagenes/logo2.png";
 
 const Login = () => {
   const [usuario, setUsuario] = useState<string>('');
   const [contraseña, setContraseña] = useState<string>('');
+  const [showPassword, setShowPassword] = useState<boolean>(false); // Estado para mostrar/ocultar contraseña
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [show, setShow] = useState(false);
@@ -24,8 +26,14 @@ const Login = () => {
         contraseña,
       });
 
-      const token = response.data;
+      // Desestructura token y rol de la respuesta
+      const { token, rol } = response.data;
+
+      // Guarda el token y el rol en localStorage
       localStorage.setItem('token', token);
+      localStorage.setItem('role', rol); // Guardamos el rol para condicionar opciones en el Sidebar
+
+      // Navega al dashboard después de iniciar sesión
       navigate('/dashboard');
     } catch (error) {
       setError('Error al iniciar sesión');
@@ -45,11 +53,11 @@ const Login = () => {
       <Form className="shadow p-4 bg-white rounded" onSubmit={handleLogin}>
         {/* Header */}
         <img
-          className="img-thumbnail mx-auto d-block mb-2"
+          className="logo mx-auto d-block mb-2"
           src={Logo}
           alt="logo"
         />
-        <div className="h4 mb-2 text-center, input-spacing">Login  </div>
+        <div className="h4 mb-2 text-center input-spacing">Login</div>
         
         {/* Error Alert */}
         {show && (
@@ -64,25 +72,30 @@ const Login = () => {
         )}
         
         <Form.Group className="input-spacing" controlId="username">
-        <Form.Control
-        type="text"
-        value={usuario}
-    placeholder="Usuario"
-    onChange={(e) => setUsuario(e.target.value)}
-    required
-  />
-</Form.Group>
+          <Form.Control
+            type="text"
+            value={usuario}
+            placeholder="Usuario"
+            onChange={(e) => setUsuario(e.target.value)}
+            required
+          />
+        </Form.Group>
 
-<Form.Group className="input-spacing" controlId="password">
-  <Form.Control
-    type="password"
-    value={contraseña}
-    placeholder="Contraseña"
-    onChange={(e) => setContraseña(e.target.value)}
-    required
-  />
-</Form.Group>
-
+        <Form.Group className="input-spacing password-input-group" controlId="password">
+          <Form.Control
+            type={showPassword ? "text" : "password"} // Cambia el tipo de input según el estado
+            value={contraseña}
+            placeholder="Contraseña"
+            onChange={(e) => setContraseña(e.target.value)}
+            required
+          />
+          <span
+            className="password-toggle-icon"
+            onClick={() => setShowPassword(!showPassword)} // Cambia el estado para mostrar/ocultar
+          >
+            {showPassword ? <FaEyeSlash /> : <FaEye />} {/* Ícono de ojo */}
+          </span>
+        </Form.Group>
 
         {!loading ? (
           <Button className="w-100 mt-4" variant="primary" type="submit">
@@ -93,7 +106,6 @@ const Login = () => {
             Iniciando...
           </Button>
         )}
-        
       </Form>
 
       {/* Footer 

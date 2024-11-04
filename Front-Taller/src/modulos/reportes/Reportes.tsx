@@ -133,7 +133,7 @@ const ReportesModule: React.FC = () => {
                                 className="input-placa"
                             />
                             <button onClick={generarInforme} className="btn-generar">Generar</button>
-                            <button onClick={imprimirPDF} className="btn-imprimir">Imprimir PDF</button>
+                            <button onClick={imprimirPDF} className="btn-imprimir">Imprimir</button>
                         </div>
                         {showSuggestions && (
                             <ul className="suggestions">

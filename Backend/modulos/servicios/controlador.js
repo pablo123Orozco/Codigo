@@ -50,6 +50,7 @@ module.exports = function (dbinyectada) {
         return db.eliminar(TABLA, id);
     }
 
+    
     return {
         todos,
         uno,
